@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>o amor da minha vida</title>
+    <title>💖</title>
     <style>
         * {
             margin: 0;
@@ -14,20 +14,22 @@
         body {
             font-family: 'Arial', sans-serif;
             min-height: 100vh;
-            background: linear-gradient(135deg, #ff758c, #ff7eb3);
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
         }
 
         h1 {
             color: #fff;
-            font-size: 2.8em;
+            font-size: 2.5em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             margin-bottom: 40px;
             padding: 15px 30px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -62,6 +64,49 @@
             display: block;
         }
 
+        .secret-layer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .secret-layer.active {
+            display: flex;
+        }
+
+        .secret-message {
+            font-size: 2em;
+            margin-bottom: 30px;
+            color: #ff1493;
+            text-shadow: 0 0 15px #ff1493;
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background: #ff1493;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .back-button:hover {
+            background: #ff0066;
+        }
+
         @media (max-width: 768px) {
             .gallery {
                 grid-template-columns: 1fr;
@@ -74,71 +119,90 @@
     </style>
 </head>
 <body>
-    <h1>💖 o amor da minha vida 💖</h1>
-    <div class="gallery" id="gallery"></div>
+    <h1>❤️o amor da minha vida❤️</h1>
+
+    <div class="gallery">
+        <div class="photo-container" data-code="•">
+            <img src="" alt="Ponto" class="photo" id="photo1">
+        </div>
+        <div class="photo-container" data-code="-">
+            <img src="" alt="Traço" class="photo" id="photo2">
+        </div>
+    </div>
+
+    <div class="secret-layer" id="secretLayer">
+        <div class="secret-message">
+            Você é minha eterna paixão 💘
+        </div>
+        <button class="back-button" onclick="hideSecretLayer()">Voltar</button>
+    </div>
 
     <script>
-        // Configurações específicas do SEU repositório
+        // Configurações do repositório
         const config = {
             usuario: 'Slaporra123',
             repositorio: 'Site',
-            branch: 'main', // Altere se necessário
-            pasta: 'Fotos' // Nome exato da pasta
+            branch: 'main',
+            pasta: 'Fotos'
         };
 
+        // Sistema de código secreto
+        const secretCode = ['•', '•', '-'];
+        let inputSequence = [];
+
+        // Carrega imagens aleatórias
         async function carregarImagens() {
             try {
                 const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
-                
                 const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error('Falha na conexão com o GitHub');
-                
                 const files = await response.json();
-                
-                // Filtra e formata as imagens
+
                 const imagens = files
-                    .filter(file => 
-                        file.type === 'file' && 
-                        /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name)
-                    )
-                    .map(file => ({
-                        name: file.name,
-                        url: file.download_url
-                    }));
+                    .filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name))
+                    .map(file => file.download_url);
 
-                if (imagens.length === 0) throw new Error('Nenhuma imagem encontrada');
+                if (imagens.length < 2) throw new Error('Poucas imagens na pasta');
 
-                // Seleção aleatória
-                const selecionadas = imagens
-                    .sort(() => Math.random() - 0.5)
-                    .slice(0, 2);
-
-                // Atualiza a galeria
-                const gallery = document.getElementById('gallery');
-                gallery.innerHTML = selecionadas.map(img => `
-                    <div class="photo-container">
-                        <img src="${img.url}" 
-                             alt="Nossa foto: ${img.name.replace(/\.[^/.]+$/, '')}" 
-                             class="photo"
-                             loading="lazy">
-                    </div>
-                `).join('');
+                // Seleciona 2 imagens aleatórias
+                const shuffled = imagens.sort(() => Math.random() - 0.5);
+                document.getElementById('photo1').src = shuffled[0];
+                document.getElementById('photo2').src = shuffled[1];
 
             } catch (error) {
-                console.error('Erro:', error);
-                document.getElementById('gallery').innerHTML = `
-                    <p style="color: white; text-align: center; font-size: 1.2em;">
-                        ❤️‍🩹 Erro ao carregar fotos. Verifique:<br>
-                        1. Se a pasta "Fotos" existe no GitHub<br>
-                        2. Se as imagens são arquivos .jpg/.png<br>
-                        3. Se o nome da pasta está correto
-                    </p>
-                `;
+                console.error('Erro ao carregar imagens:', error);
             }
         }
 
-        // Inicia ao carregar a página
-        window.addEventListener('DOMContentLoaded', carregarImagens);
+        // Eventos de clique nas imagens
+        document.querySelectorAll('.photo-container').forEach(container => {
+            container.addEventListener('click', () => {
+                inputSequence.push(container.dataset.code);
+                checkSecretCode();
+            });
+        });
+
+        function checkSecretCode() {
+            if (inputSequence.join('') === secretCode.join('')) {
+                showSecretLayer();
+                inputSequence = [];
+            } else if (inputSequence.length >= secretCode.length) {
+                inputSequence = [];
+            }
+        }
+
+        function showSecretLayer() {
+            const layer = document.getElementById('secretLayer');
+            layer.classList.add('active');
+            setTimeout(hideSecretLayer, 25000);
+        }
+
+        function hideSecretLayer() {
+            const layer = document.getElementById('secretLayer');
+            layer.classList.remove('active');
+        }
+
+        // Inicialização
+        carregarImagens();
     </script>
 </body>
 </html>
