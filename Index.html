@@ -12,26 +12,20 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Arial', sans-serif;
             min-height: 100vh;
-            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+            background: linear-gradient(135deg, #ff758c, #ff7eb3);
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 40px 20px;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
         h1 {
             color: #fff;
             font-size: 2.8em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            position: relative;
-            display: inline-block;
+            margin-bottom: 40px;
             padding: 15px 30px;
             background: rgba(255, 255, 255, 0.15);
             border-radius: 15px;
@@ -53,12 +47,12 @@
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.3s ease;
             aspect-ratio: 1/1;
         }
 
         .photo-container:hover {
-            transform: translateY(-5px) scale(1.02);
+            transform: scale(1.03);
         }
 
         .photo {
@@ -71,58 +65,60 @@
         @media (max-width: 768px) {
             .gallery {
                 grid-template-columns: 1fr;
-                gap: 20px;
             }
-
+            
             h1 {
                 font-size: 2em;
-                padding: 12px 24px;
             }
-        }
-
-        .loading {
-            color: white;
-            font-size: 1.5em;
-            text-align: center;
-            margin-top: 40px;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🌹 Eu Amo Ela 🌹</h1>
-    </div>
-
-    <div class="gallery" id="gallery">
-        <div class="loading">amo minha mulher</div>
-    </div>
+    <h1>💖 Eu Amo Ela 💖</h1>
+    <div class="gallery" id="gallery"></div>
 
     <script>
+        // Configurações específicas do SEU repositório
+        const config = {
+            usuario: 'Slaporra123',
+            repositorio: 'Site',
+            branch: 'main', // Altere se necessário
+            pasta: 'Fotos' // Nome exato da pasta
+        };
+
         async function carregarImagens() {
             try {
-                // 1. Busca a lista de imagens via GitHub API
-                const response = await fetch('https://api.github.com/repos/Slaporra123/Site/contents/fotos');
-                const data = await response.json();
-
-                // 2. Filtra apenas arquivos de imagem
-                const imagens = data
-                    .filter(item => /\.(jpg|jpeg|png|gif|webp)$/i.test(item.name))
-                    .map(item => ({
-                        name: item.name,
-                        url: item.download_url
+                const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
+                
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error('Falha na conexão com o GitHub');
+                
+                const files = await response.json();
+                
+                // Filtra e formata as imagens
+                const imagens = files
+                    .filter(file => 
+                        file.type === 'file' && 
+                        /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name)
+                    )
+                    .map(file => ({
+                        name: file.name,
+                        url: file.download_url
                     }));
 
-                // 3. Seleciona 2 imagens aleatórias
+                if (imagens.length === 0) throw new Error('Nenhuma imagem encontrada');
+
+                // Seleção aleatória
                 const selecionadas = imagens
                     .sort(() => Math.random() - 0.5)
                     .slice(0, 2);
 
-                // 4. Exibe as imagens
+                // Atualiza a galeria
                 const gallery = document.getElementById('gallery');
-                gallery.innerHTML = selecionadas.map(imagem => `
+                gallery.innerHTML = selecionadas.map(img => `
                     <div class="photo-container">
-                        <img src="${imagem.url}" 
-                             alt="Nossa memória especial: ${imagem.name}" 
+                        <img src="${img.url}" 
+                             alt="Nossa foto: ${img.name.replace(/\.[^/.]+$/, '')}" 
                              class="photo"
                              loading="lazy">
                     </div>
@@ -130,16 +126,19 @@
 
             } catch (error) {
                 console.error('Erro:', error);
-                gallery.innerHTML = `
-                    <div class="error">
-                        😢 Ocorreu um erro ao carregar as fotos. Recarregue a página!
-                    </div>
+                document.getElementById('gallery').innerHTML = `
+                    <p style="color: white; text-align: center; font-size: 1.2em;">
+                        ❤️‍🩹 Erro ao carregar fotos. Verifique:<br>
+                        1. Se a pasta "Fotos" existe no GitHub<br>
+                        2. Se as imagens são arquivos .jpg/.png<br>
+                        3. Se o nome da pasta está correto
+                    </p>
                 `;
             }
         }
 
-        // Carrega as imagens ao abrir a página
-        window.onload = carregarImagens;
+        // Inicia ao carregar a página
+        window.addEventListener('DOMContentLoaded', carregarImagens);
     </script>
 </body>
 </html>
