@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>💖</title>
     <style>
+        /* Mantido igual à versão anterior */
         * {
             margin: 0;
             padding: 0;
@@ -171,19 +172,16 @@
                 const availableImages = imagens.filter(img => !displayedImages.has(img));
 
                 if (availableImages.length < 2) {
-                    // Se não houver imagens novas, reinicia o controle
                     displayedImages.clear();
                     return carregarImagens();
                 }
 
-                // Seleciona 2 imagens aleatórias
                 const shuffled = availableImages.sort(() => Math.random() - 0.5);
                 const [img1, img2] = shuffled.slice(0, 2);
 
                 document.getElementById('photo1').src = img1;
                 document.getElementById('photo2').src = img2;
 
-                // Atualiza controle
                 displayedImages.add(img1);
                 displayedImages.add(img2);
 
@@ -192,7 +190,7 @@
             }
         }
 
-        // Sistema de código secreto
+        // Sistema de código secreto melhorado
         const secretCode = ['•', '•', '-'];
         let inputSequence = [];
 
@@ -204,10 +202,17 @@
         });
 
         function checkSecretCode() {
-            if (inputSequence.join('') === secretCode.join('')) {
+            // Verifica a cada clique se o código parcial está correto
+            for (let i = 0; i < inputSequence.length; i++) {
+                if (inputSequence[i] !== secretCode[i]) {
+                    inputSequence = [];
+                    return;
+                }
+            }
+
+            // Se chegou ao tamanho do código e está correto
+            if (inputSequence.length === secretCode.length) {
                 showSecretLayer();
-                inputSequence = [];
-            } else if (inputSequence.length >= secretCode.length) {
                 inputSequence = [];
             }
         }
