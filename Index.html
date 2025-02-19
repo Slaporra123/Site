@@ -1,38 +1,55 @@
-<script>
-  async function carregarImagens() {
-    try {
-      // 1. Carrega a lista de imagens
-      const response = await fetch('/imagens.json?t=' + Date.now());
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const imagens = await response.json();
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eu Amo Ela</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>💖 Eu Amo Ela 💖</h1>
+        <div class="gallery" id="gallery"></div>
+        <button class="refresh-button" onclick="carregarImagens()">Atualizar Fotos</button>
+    </div>
 
-      // 2. Verifica se há imagens
-      if (imagens.length === 0) {
-        throw new Error('Nenhuma imagem encontrada no JSON!');
-      }
+    <script>
+        // Função para carregar imagens aleatórias
+        async function carregarImagens() {
+            try {
+                // 1. Busca a lista de arquivos na pasta "fotos"
+                const response = await fetch('fotos/');
+                const text = await response.text();
 
-      // 3. Exibe as imagens
-      const gallery = document.getElementById('gallery');
-      gallery.innerHTML = imagens
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 2)
-        .map(imagem => `
-          <div class="photo">
-            <img src="/fotos/${imagem}" 
-                 alt="Nossa foto" 
-                 onerror="this.style.display='none'">
-          </div>
-        `).join('');
-        
-    } catch (error) {
-      console.error('Erro:', error);
-      document.getElementById('gallery').innerHTML = `
-        <p style="color: red">⚠️ Erro ao carregar fotos: ${error.message}</p>
-      `;
-    }
-  }
-</script>
+                // 2. Extrai os nomes dos arquivos de imagem
+                const parser = new DOMParser();
+                const html = parser.parseFromString(text, 'text/html');
+                const links = Array.from(html.querySelectorAll('a'))
+                    .map(link => link.href)
+                    .filter(href => /\.(jpg|jpeg|png|gif|webp)$/i.test(href));
+
+                // 3. Seleciona 2 imagens aleatórias
+                const shuffled = links.sort(() => 0.5 - Math.random());
+                const selecionadas = shuffled.slice(0, 2);
+
+                // 4. Exibe as imagens na página
+                const gallery = document.getElementById('gallery');
+                gallery.innerHTML = selecionadas.map(src => `
+                    <div class="photo">
+                        <img src="${src}" alt="Nossa Foto">
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Erro ao carregar imagens:', error);
+                document.getElementById('gallery').innerHTML = `
+                    <p style="color: red">⚠️ Erro ao carregar fotos. Verifique o console para mais detalhes.</p>
+                `;
+            }
+        }
+
+        // Carrega as imagens ao iniciar
+        carregarImagens();
+    </script>
+</body>
+</html>
