@@ -4,52 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eu Amo Ela</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.8em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            display: inline-block;
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .photo-container {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            aspect-ratio: 1/1;
+        }
+
+        .photo-container:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        .photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+                padding: 12px 24px;
+            }
+        }
+
+        .loading {
+            color: white;
+            font-size: 1.5em;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>💖 Eu Amo Ela 💖</h1>
-        <div class="gallery" id="gallery"></div>
-        <button class="refresh-button" onclick="carregarImagens()">Atualizar Fotos</button>
+    <div class="header">
+        <h1>🌹 Eu Amo Ela 🌹</h1>
+    </div>
+
+    <div class="gallery" id="gallery">
+        <div class="loading">amo minha mulher</div>
     </div>
 
     <script>
-        // Função para carregar imagens aleatórias
         async function carregarImagens() {
             try {
-                // 1. Busca a lista de arquivos na pasta "fotos"
-                const response = await fetch('fotos/');
-                const text = await response.text();
+                // 1. Busca a lista de imagens via GitHub API
+                const response = await fetch('https://api.github.com/repos/Slaporra123/SEU_REPOSITORIO/contents/fotos');
+                const data = await response.json();
 
-                // 2. Extrai os nomes dos arquivos de imagem
-                const parser = new DOMParser();
-                const html = parser.parseFromString(text, 'text/html');
-                const links = Array.from(html.querySelectorAll('a'))
-                    .map(link => link.href)
-                    .filter(href => /\.(jpg|jpeg|png|gif|webp)$/i.test(href));
+                // 2. Filtra apenas arquivos de imagem
+                const imagens = data
+                    .filter(item => /\.(jpg|jpeg|png|gif|webp)$/i.test(item.name))
+                    .map(item => ({
+                        name: item.name,
+                        url: item.download_url
+                    }));
 
                 // 3. Seleciona 2 imagens aleatórias
-                const shuffled = links.sort(() => 0.5 - Math.random());
-                const selecionadas = shuffled.slice(0, 2);
+                const selecionadas = imagens
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, 2);
 
-                // 4. Exibe as imagens na página
+                // 4. Exibe as imagens
                 const gallery = document.getElementById('gallery');
-                gallery.innerHTML = selecionadas.map(src => `
-                    <div class="photo">
-                        <img src="${src}" alt="Nossa Foto">
+                gallery.innerHTML = selecionadas.map(imagem => `
+                    <div class="photo-container">
+                        <img src="${imagem.url}" 
+                             alt="Nossa memória especial: ${imagem.name}" 
+                             class="photo"
+                             loading="lazy">
                     </div>
                 `).join('');
-                
+
             } catch (error) {
-                console.error('Erro ao carregar imagens:', error);
-                document.getElementById('gallery').innerHTML = `
-                    <p style="color: red">⚠️ Erro ao carregar fotos. Verifique o console para mais detalhes.</p>
+                console.error('Erro:', error);
+                gallery.innerHTML = `
+                    <div class="error">
+                        😢 Ocorreu um erro ao carregar as fotos. Recarregue a página!
+                    </div>
                 `;
             }
         }
 
-        // Carrega as imagens ao iniciar
-        carregarImagens();
+        // Carrega as imagens ao abrir a página
+        window.onload = carregarImagens;
     </script>
 </body>
 </html>
