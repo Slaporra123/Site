@@ -14,25 +14,20 @@
         body {
             font-family: 'Arial', sans-serif;
             min-height: 100vh;
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            background: #000;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 40px 20px;
             position: relative;
-            overflow: hidden;
         }
 
         h1 {
-            color: #fff;
+            color: #ff1493;
             font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 0 15px #ff1493;
             margin-bottom: 40px;
-            padding: 15px 30px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
         }
 
         .gallery {
@@ -48,7 +43,7 @@
             position: relative;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 20px rgba(255, 20, 147, 0.3);
             transition: transform 0.3s ease;
             aspect-ratio: 1/1;
         }
@@ -71,7 +66,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 1000;
             flex-direction: column;
             align-items: center;
@@ -90,21 +85,24 @@
             margin-bottom: 30px;
             color: #ff1493;
             text-shadow: 0 0 15px #ff1493;
+            max-width: 80%;
+            line-height: 1.5;
         }
 
         .back-button {
-            padding: 10px 20px;
+            padding: 12px 25px;
             font-size: 1.2em;
             background: #ff1493;
             color: #fff;
             border: none;
             border-radius: 25px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
         }
 
         .back-button:hover {
             background: #ff0066;
+            transform: scale(1.05);
         }
 
         @media (max-width: 768px) {
@@ -113,7 +111,11 @@
             }
             
             h1 {
-                font-size: 2em;
+                font-size: 1.8em;
+            }
+
+            .secret-message {
+                font-size: 1.5em;
             }
         }
     </style>
@@ -132,7 +134,10 @@
 
     <div class="secret-layer" id="secretLayer">
         <div class="secret-message">
-            eu amo MUITO te ter na minha vida, amo te amar e prometo te fazer a mulher mais feliz do mundo enquanto a gente ainda respirar 💘
+            Eu amo MUITO te ter na minha vida,<br>
+            amo te amar e prometo te fazer<br>
+            a mulher mais feliz do mundo<br>
+            enquanto a gente ainda respirar 💘
         </div>
         <button class="back-button" onclick="hideSecretLayer()">Voltar</button>
     </div>
@@ -146,11 +151,10 @@
             pasta: 'Fotos'
         };
 
-        // Sistema de código secreto
-        const secretCode = ['•', '•', '-'];
-        let inputSequence = [];
+        // Controle de imagens exibidas
+        let displayedImages = new Set();
 
-        // Carrega imagens aleatórias
+        // Carrega imagens aleatórias únicas
         async function carregarImagens() {
             try {
                 const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
@@ -161,19 +165,37 @@
                     .filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name))
                     .map(file => file.download_url);
 
-                if (imagens.length < 2) throw new Error('Poucas imagens na pasta');
+                if (imagens.length < 2) throw new Error('Adicione pelo menos 2 imagens diferentes');
+
+                // Filtra imagens já exibidas
+                const availableImages = imagens.filter(img => !displayedImages.has(img));
+
+                if (availableImages.length < 2) {
+                    // Se não houver imagens novas, reinicia o controle
+                    displayedImages.clear();
+                    return carregarImagens();
+                }
 
                 // Seleciona 2 imagens aleatórias
-                const shuffled = imagens.sort(() => Math.random() - 0.5);
-                document.getElementById('photo1').src = shuffled[0];
-                document.getElementById('photo2').src = shuffled[1];
+                const shuffled = availableImages.sort(() => Math.random() - 0.5);
+                const [img1, img2] = shuffled.slice(0, 2);
+
+                document.getElementById('photo1').src = img1;
+                document.getElementById('photo2').src = img2;
+
+                // Atualiza controle
+                displayedImages.add(img1);
+                displayedImages.add(img2);
 
             } catch (error) {
-                console.error('Erro ao carregar imagens:', error);
+                console.error('Erro:', error);
             }
         }
 
-        // Eventos de clique nas imagens
+        // Sistema de código secreto
+        const secretCode = ['•', '•', '-'];
+        let inputSequence = [];
+
         document.querySelectorAll('.photo-container').forEach(container => {
             container.addEventListener('click', () => {
                 inputSequence.push(container.dataset.code);
@@ -197,8 +219,7 @@
         }
 
         function hideSecretLayer() {
-            const layer = document.getElementById('secretLayer');
-            layer.classList.remove('active');
+            document.getElementById('secretLayer').classList.remove('active');
         }
 
         // Inicialização
