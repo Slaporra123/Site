@@ -8,19 +8,29 @@ exports.handler = async (event, context) => {
     const token = process.env.GITHUB_TOKEN;
 
     try {
+        if (!token) {
+            throw new Error('GITHUB_TOKEN não configurado nas variáveis de ambiente');
+        }
+
         const apiUrl = `https://api.github.com/repos/${usuario}/${repositorio}/contents/${pasta}?ref=${branch}`;
         const response = await fetch(apiUrl, {
             headers: {
                 'Authorization': `token ${token}`,
-                'Accept': 'application/vnd.github.v3+json'
+                'Accept': 'application/vnd.github.v3+json',
+                'User-Agent': 'Site-Netlify-Function' // Recomendado pela API do GitHub
             }
         });
 
         if (!response.ok) {
-            throw new Error('Erro na requisição: ' + response.status);
+            const errorText = await response.text();
+            throw new Error(`Erro na requisição: ${response.status} - ${errorText}`);
         }
 
         const files = await response.json();
+        if (!Array.isArray(files)) {
+            throw new Error('Resposta inválida da API do GitHub');
+        }
+
         const media = files
             .filter(file => /\.(jpg|jpeg|png|gif|mp4)$/i.test(file.name))
             .map(file => {
@@ -33,15 +43,12 @@ exports.handler = async (event, context) => {
             });
 
         if (media.length < 2) {
-            throw new Error('A pasta precisa conter pelo menos 2 arquivos de mídia');
+            throw new Error('A pasta "Fotos" precisa conter pelo menos 2 arquivos de mídia válidos');
         }
-
-        const shuffled = media.sort(() => Math.random() - 0.5);
-        const selectedMedia = shuffled.slice(0, 2);
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ media: selectedMedia }),
+            body: JSON.stringify({ media }), // Retorna todos os arquivos
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
@@ -51,7 +58,7 @@ exports.handler = async (event, context) => {
         console.error('Erro:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Erro ao buscar mídia' })
+            body: JSON.stringify({ error: error.message })
         };
     }
 };
