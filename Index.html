@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>💖</title>
     <style>
+        /* Estilos mantidos inalterados */
         * {
             margin: 0;
             padding: 0;
@@ -39,7 +40,7 @@
             padding: 20px;
         }
 
-        .media-container {
+        .photo-container {
             position: relative;
             border-radius: 15px;
             overflow: hidden;
@@ -48,26 +49,15 @@
             aspect-ratio: 1/1;
         }
 
-        .media-container:hover {
+        .photo-container:hover {
             transform: scale(1.03);
         }
 
-        .media {
+        .photo {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
-        }
-
-        video.media {
-            background: #000;
-        }
-
-        .error-message {
-            color: #ff1493;
-            font-size: 1.5em;
-            text-align: center;
-            margin-top: 20px;
         }
 
         .secret-layer {
@@ -116,6 +106,42 @@
             transform: scale(1.05);
         }
 
+        /* Novo estilo para o layout do console */
+        .console-layer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .console-layer.active {
+            display: flex;
+        }
+
+        .console-content {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            color: #00ff00;
+            text-align: left;
+            white-space: pre-wrap;
+        }
+
         @media (max-width: 768px) {
             .gallery {
                 grid-template-columns: 1fr;
@@ -135,8 +161,12 @@
     <h1>❤️o amor da minha vida❤️</h1>
 
     <div class="gallery">
-        <div class="media-container" data-code="•" id="container1"></div>
-        <div class="media-container" data-code="-" id="container2"></div>
+        <div class="photo-container" data-code="•">
+            <img src="" alt="Ponto" class="photo" id="photo1">
+        </div>
+        <div class="photo-container" data-code="-">
+            <img src="" alt="Traço" class="photo" id="photo2">
+        </div>
     </div>
 
     <div class="secret-layer" id="secretLayer">
@@ -149,46 +179,84 @@
         <button class="back-button" onclick="hideSecretLayer()">Voltar</button>
     </div>
 
-    <div class="error-message" id="errorMessage"></div>
+    <!-- Novo layout para exibir o conteúdo do console -->
+    <div class="console-layer" id="consoleLayer">
+        <div class="console-content" id="consoleContent"></div>
+        <button class="back-button" onclick="hideConsoleLayer()">Voltar</button>
+    </div>
 
     <script>
+        // Configurações do repositório
+        const config = {
+            usuario: 'Slaporra123', // Substitua pelo seu usuário do GitHub
+            repositorio: 'Site',    // Substitua pelo nome do repositório
+            branch: 'main',         // Substitua pelo branch correto
+            pasta: 'Fotos'          // Substitua pela pasta onde estão as imagens
+        };
+
+        // Controle de imagens exibidas
+        let displayedImages = new Set();
+
+        // Função para carregar imagens com cache e autenticação
         async function carregarImagens() {
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = ''; // Limpa mensagens anteriores
+            const cacheKey = `github-images-${config.usuario}-${config.repositorio}-${config.pasta}`;
+            const cacheExpiry = 60 * 60 * 1000; // 1 hora de cache
 
+            // Verifica se há cache válido
+            const cachedData = localStorage.getItem(cacheKey);
+            if (cachedData) {
+                const { timestamp, images } = JSON.parse(cachedData);
+                if (Date.now() - timestamp < cacheExpiry) {
+                    exibirImagens(images);
+                    return;
+                }
+            }
+
+            // Se não houver cache válido, faz a requisição à API
             try {
-                const response = await fetch('/.netlify/functions/getGitHubMedia');
-                if (!response.ok) {
-                    throw new Error(`Erro na requisição: ${response.status}`);
-                }
-                const data = await response.json();
-                console.log('Dados recebidos:', data);
-
-                if (!data.media || data.media.length < 2) {
-                    throw new Error('A pasta "Fotos" precisa conter pelo menos 2 arquivos de mídia');
-                }
-
-                const shuffled = data.media.sort(() => Math.random() - 0.5);
-                const selectedMedia = shuffled.slice(0, 2);
-
-                selectedMedia.forEach((item, index) => {
-                    const container = document.getElementById(`container${index + 1}`);
-                    if (item.type === 'image' || item.type === 'gif') {
-                        container.innerHTML = `<img src="${item.url}" alt="Mídia ${index + 1}" class="media">`;
-                    } else if (item.type === 'video') {
-                        container.innerHTML = `<video controls class="media"><source src="${item.url}" type="video/mp4"></video>`;
-                    }
+                const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
+                const response = await fetch(apiUrl, {
+                    headers: {
+                        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`, // Usando a variável de ambiente
+                    },
                 });
+                if (!response.ok) throw new Error('Erro ao carregar imagens');
+                const files = await response.json();
+
+                const imagens = files
+                    .filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name))
+                    .map(file => file.download_url);
+
+                if (imagens.length < 2) throw new Error('Adicione pelo menos 2 imagens diferentes');
+
+                // Armazena no cache
+                localStorage.setItem(cacheKey, JSON.stringify({
+                    timestamp: Date.now(),
+                    images: imagens,
+                }));
+
+                exibirImagens(imagens);
             } catch (error) {
-                console.error('Erro ao carregar mídia:', error);
-                errorDiv.textContent = error.message;
+                console.error('Erro:', error);
+                alert('Erro ao carregar imagens. Verifique o console para mais detalhes.');
             }
         }
 
-        const secretCode = ['•', '•', '-'];
+        // Função para exibir imagens na galeria
+        function exibirImagens(imagens) {
+            const shuffled = imagens.sort(() => Math.random() - 0.5);
+            const [img1, img2] = shuffled.slice(0, 2);
+
+            document.getElementById('photo1').src = img1;
+            document.getElementById('photo2').src = img2;
+        }
+
+        // Sistema de código secreto
+        const secretCode1 = ['•', '•', '-']; // Primeiro código secreto
+        const secretCode2 = ['-', '-', '-', '-', '•', '•', '•', '•', '-', '-', '-', '-', '•', '•', '•', '•']; // Segundo código secreto
         let inputSequence = [];
 
-        document.querySelectorAll('.media-container').forEach(container => {
+        document.querySelectorAll('.photo-container').forEach(container => {
             container.addEventListener('click', () => {
                 inputSequence.push(container.dataset.code);
                 checkSecretCode();
@@ -196,14 +264,22 @@
         });
 
         function checkSecretCode() {
-            for (let i = 0; i < inputSequence.length; i++) {
-                if (inputSequence[i] !== secretCode[i]) {
-                    inputSequence = [];
-                    return;
-                }
-            }
-            if (inputSequence.length === secretCode.length) {
+            // Verifica o primeiro código secreto
+            if (inputSequence.length === secretCode1.length && inputSequence.every((val, index) => val === secretCode1[index])) {
                 showSecretLayer();
+                inputSequence = [];
+                return;
+            }
+
+            // Verifica o segundo código secreto
+            if (inputSequence.length === secretCode2.length && inputSequence.every((val, index) => val === secretCode2[index])) {
+                showConsoleLayer();
+                inputSequence = [];
+                return;
+            }
+
+            // Limpa a sequência se não corresponder a nenhum código
+            if (inputSequence.length >= secretCode2.length) {
                 inputSequence = [];
             }
         }
@@ -211,13 +287,51 @@
         function showSecretLayer() {
             const layer = document.getElementById('secretLayer');
             layer.classList.add('active');
-            setTimeout(hideSecretLayer, 25000);
+            setTimeout(hideSecretLayer, 25000); // Esconde a mensagem após 25 segundos
         }
 
         function hideSecretLayer() {
             document.getElementById('secretLayer').classList.remove('active');
         }
 
+        // Funções para o layout do console
+        function showConsoleLayer() {
+            const consoleContent = document.getElementById('consoleContent');
+            consoleContent.textContent = captureConsoleLogs(); // Captura os logs do console
+            const layer = document.getElementById('consoleLayer');
+            layer.classList.add('active');
+        }
+
+        function hideConsoleLayer() {
+            document.getElementById('consoleLayer').classList.remove('active');
+        }
+
+        // Captura os logs do console
+        function captureConsoleLogs() {
+            const logs = [];
+            const originalConsoleLog = console.log;
+            const originalConsoleError = console.error;
+            const originalConsoleWarn = console.warn;
+
+            console.log = function (...args) {
+                logs.push(`LOG: ${args.join(' ')}`);
+                originalConsoleLog.apply(console, args);
+            };
+
+            console.error = function (...args) {
+                logs.push(`ERROR: ${args.join(' ')}`);
+                originalConsoleError.apply(console, args);
+            };
+
+            console.warn = function (...args) {
+                logs.push(`WARN: ${args.join(' ')}`);
+                originalConsoleWarn.apply(console, args);
+            };
+
+            return logs.join('\n');
+        }
+
+        // Inicialização
         carregarImagens();
     </script>
 </body>
