@@ -194,8 +194,8 @@
             pasta: 'Fotos'          // Substitua pela pasta onde estão as imagens
         };
 
-        // Token de acesso pessoal do GitHub (use variáveis de ambiente no Netlify)
-        const GITHUB_TOKEN = 'SEU_TOKEN_AQUI'; // Substitua pelo seu token ou use process.env.GITHUB_TOKEN
+        // Token de acesso pessoal do GitHub (usando variável de ambiente)
+        const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // Acessa a variável de ambiente
 
         // Controle de imagens exibidas
         let displayedImages = new Set();
@@ -297,45 +297,39 @@
         }
 
         // Funções para o layout do console
+        const consoleLogs = []; // Array para armazenar logs
+
+        // Captura logs automaticamente
+        (function captureLogs() {
+            const originalConsoleLog = console.log;
+            const originalConsoleError = console.error;
+            const originalConsoleWarn = console.warn;
+
+            console.log = function (...args) {
+                consoleLogs.push(`LOG: ${args.join(' ')}`);
+                originalConsoleLog.apply(console, args);
+            };
+
+            console.error = function (...args) {
+                consoleLogs.push(`ERROR: ${args.join(' ')}`);
+                originalConsoleError.apply(console, args);
+            };
+
+            console.warn = function (...args) {
+                consoleLogs.push(`WARN: ${args.join(' ')}`);
+                originalConsoleWarn.apply(console, args);
+            };
+        })();
+
         function showConsoleLayer() {
             const consoleContent = document.getElementById('consoleContent');
-            consoleContent.textContent = captureConsoleLogs(); // Captura os logs do console
+            consoleContent.textContent = consoleLogs.join('\n'); // Exibe todos os logs
             const layer = document.getElementById('consoleLayer');
             layer.classList.add('active');
         }
 
         function hideConsoleLayer() {
             document.getElementById('consoleLayer').classList.remove('active');
-        }
-
-        // Captura os logs do console
-        function captureConsoleLogs() {
-            const logs = [];
-            const originalConsoleLog = console.log;
-            const originalConsoleError = console.error;
-            const originalConsoleWarn = console.warn;
-
-            // Captura logs futuros
-            console.log = function (...args) {
-                logs.push(`LOG: ${args.join(' ')}`);
-                originalConsoleLog.apply(console, args);
-            };
-
-            console.error = function (...args) {
-                logs.push(`ERROR: ${args.join(' ')}`);
-                originalConsoleError.apply(console, args);
-            };
-
-            console.warn = function (...args) {
-                logs.push(`WARN: ${args.join(' ')}`);
-                originalConsoleWarn.apply(console, args);
-            };
-
-            // Captura logs anteriores
-            const consoleLogs = console.history || [];
-            consoleLogs.forEach(log => logs.push(log));
-
-            return logs.join('\n');
         }
 
         // Inicialização
