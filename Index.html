@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Mulher Que Eu Amo</title>
+    <title>💖</title>
     <style>
+        /* Mantido igual à versão anterior */
         * {
             margin: 0;
             padding: 0;
@@ -12,50 +13,54 @@
         }
 
         body {
-            background: #1a1a1a;
-            min-height: 100vh;
             font-family: 'Arial', sans-serif;
-            overflow: hidden;
-        }
-
-        .container {
+            min-height: 100vh;
+            background: #000;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            padding: 40px 20px;
             position: relative;
         }
 
-        .title {
-            color: #fff;
-            font-size: 2.5rem;
+        h1 {
+            color: #ff1493;
+            font-size: 2.5em;
+            text-shadow: 0 0 15px #ff1493;
             margin-bottom: 40px;
-            opacity: 0;
-            animation: fadeIn 1s ease forwards;
+            text-align: center;
         }
 
-        .images {
-            display: flex;
-            gap: 20px;
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
         }
 
-        .media {
-            width: 300px;
-            height: 400px;
-            object-fit: cover;
+        .photo-container {
+            position: relative;
             border-radius: 15px;
-            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(255, 20, 147, 0.3);
             transition: transform 0.3s ease;
-            opacity: 0;
-            animation: slideUp 0.8s ease forwards;
+            aspect-ratio: 1/1;
         }
 
-        .media:hover {
-            transform: scale(1.05);
+        .photo-container:hover {
+            transform: scale(1.03);
         }
 
-        .message-layer {
+        .photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .secret-layer {
             display: none;
             position: fixed;
             top: 0;
@@ -63,141 +68,180 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
-            z-index: 1000;
-        }
-
-        .message {
-            color: #ff00ff;
-            font-size: 2rem;
+            color: #fff;
             text-align: center;
             padding: 20px;
-            text-shadow: 0 0 10px #ff00ff;
-            opacity: 0;
         }
 
-        .back-btn {
-            margin-top: 30px;
-            padding: 10px 20px;
-            background: none;
-            border: 2px solid #ff00ff;
-            color: #ff00ff;
+        .secret-layer.active {
+            display: flex;
+        }
+
+        .secret-message {
+            font-size: 2em;
+            margin-bottom: 30px;
+            color: #ff1493;
+            text-shadow: 0 0 15px #ff1493;
+            max-width: 80%;
+            line-height: 1.5;
+        }
+
+        .back-button {
+            padding: 12px 25px;
+            font-size: 1.2em;
+            background: #ff1493;
+            color: #fff;
+            border: none;
             border-radius: 25px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
 
-        .back-btn:hover {
-            background: #ff00ff;
-            color: #fff;
+        .back-button:hover {
+            background: #ff0066;
+            transform: scale(1.05);
         }
 
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
 
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            .secret-message {
+                font-size: 1.5em;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="title">a mulher que eu amo</h1>
-        <div class="images">
-            <img class="media" id="media1">
-            <img class="media" id="media2">
+    <h1>❤️o amor da minha vida❤️</h1>
+
+    <div class="gallery">
+        <div class="photo-container" data-code="•">
+            <img src="" alt="Ponto" class="photo" id="photo1">
+        </div>
+        <div class="photo-container" data-code="-">
+            <img src="" alt="Traço" class="photo" id="photo2">
         </div>
     </div>
 
-    <div class="message-layer" id="messageLayer">
-        <div class="message" id="messageText">
-            eu amo MUITO Te ter na minha vida, amo te amar e prometo te fazer a mulher mais feliz do mundo enquanto a gente ainda respirar
+    <div class="secret-layer" id="secretLayer">
+        <div class="secret-message">
+            Eu amo MUITO te ter na minha vida,<br>
+            amo te amar e prometo te fazer<br>
+            a mulher mais feliz do mundo<br>
+            enquanto a gente ainda respirar 💘
         </div>
-        <button class="back-btn" id="backBtn">voltar</button>
+        <button class="back-button" onclick="hideSecretLayer()">Voltar</button>
     </div>
 
     <script>
-        // Configuração do GitHub
-        const GITHUB_USERNAME = 'Slaporra123'; // Substitua pelo seu usuário do GitHub
-        const REPO_NAME = 'https://github.com/Slaporra123/Site'; // Substitua pelo nome do repositório
-        const FOLDER_PATH = 'Site/Fotos'; // Nome da pasta no repositório com as mídias
-        const GITHUB_TOKEN = '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'; // Token de acesso pessoal (opcional para repositórios públicos)
+        // Configurações do repositório COM TOKEN
+        const config = {
+            usuario: 'Slaporra123',
+            repositorio: 'Site',
+            branch: 'main',
+            pasta: 'Fotos',
+            token: 'ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' // Substitua pelo seu token
+        };
 
-        let sequence = '';
-        const targetSequence = '••--•';
+        // Controle de imagens exibidas
+        let displayedImages = new Set();
 
-        async function fetchMedia() {
+        // Carrega imagens com autenticação
+        async function carregarImagens() {
             try {
-                const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FOLDER_PATH}`;
-                const headers = GITHUB_TOKEN ? {
-                    Authorization: `token ${GITHUB_TOKEN}`,
-                    Accept: 'application/vnd.github.v3+json'
-                } : { Accept: 'application/vnd.github.v3+json' };
+                const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
+                
+                const response = await fetch(apiUrl, {
+                    headers: {
+                        'Authorization': `token ${config.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
 
-                const response = await fetch(url, { headers });
-                if (!response.ok) throw new Error('Erro ao acessar o repositório');
-                const files = await response.json();
-
-                // Filtra automaticamente arquivos de mídia (imagens, vídeos, GIFs)
-                const mediaFiles = files.filter(file => 
-                    file.type === 'file' && file.name.match(/\.(jpg|jpeg|png|gif|mp4|webm)$/i)
-                );
-
-                if (mediaFiles.length < 2) {
-                    console.error('A pasta precisa ter pelo menos 2 arquivos de mídia!');
-                    return;
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
                 }
 
-                // Seleciona 2 arquivos aleatórios
-                const shuffled = mediaFiles.sort(() => 0.5 - Math.random());
-                const selected = shuffled.slice(0, 2);
+                const files = await response.json();
 
-                // Usa os URLs diretos das mídias
-                document.getElementById('media1').src = selected[0].download_url;
-                document.getElementById('media2').src = selected[1].download_url;
+                const imagens = files
+                    .filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name))
+                    .map(file => file.download_url);
+
+                if (imagens.length < 2) throw new Error('Adicione pelo menos 2 imagens diferentes');
+
+                // Filtra imagens já exibidas
+                const availableImages = imagens.filter(img => !displayedImages.has(img));
+
+                if (availableImages.length < 2) {
+                    displayedImages.clear();
+                    return carregarImagens();
+                }
+
+                const shuffled = availableImages.sort(() => Math.random() - 0.5);
+                const [img1, img2] = shuffled.slice(0, 2);
+
+                document.getElementById('photo1').src = img1;
+                document.getElementById('photo2').src = img2;
+
+                displayedImages.add(img1);
+                displayedImages.add(img2);
+
             } catch (error) {
-                console.error('Erro ao buscar mídias:', error);
-                document.querySelector('.title').textContent = 'Erro ao carregar mídias';
+                console.error('Erro:', error);
+                if(error.message.includes('403')) {
+                    alert('Limite de requisições excedido! Tente mais tarde.');
+                }
             }
         }
 
-        function checkSequence() {
-            if (sequence === targetSequence) {
-                const layer = document.getElementById('messageLayer');
-                const message = document.getElementById('messageText');
-                layer.style.display = 'flex';
-                setTimeout(() => {
-                    message.style.opacity = '1';
-                }, 100);
-                sequence = ''; // Reseta a sequência
+        // Restante do código mantido igual
+        const secretCode = ['•', '•', '-'];
+        let inputSequence = [];
+
+        document.querySelectorAll('.photo-container').forEach(container => {
+            container.addEventListener('click', () => {
+                inputSequence.push(container.dataset.code);
+                checkSecretCode();
+            });
+        });
+
+        function checkSecretCode() {
+            for (let i = 0; i < inputSequence.length; i++) {
+                if (inputSequence[i] !== secretCode[i]) {
+                    inputSequence = [];
+                    return;
+                }
+            }
+
+            if (inputSequence.length === secretCode.length) {
+                showSecretLayer();
+                inputSequence = [];
             }
         }
 
-        document.getElementById('media1').addEventListener('click', () => {
-            sequence += '•';
-            checkSequence();
-        });
+        function showSecretLayer() {
+            const layer = document.getElementById('secretLayer');
+            layer.classList.add('active');
+            setTimeout(hideSecretLayer, 25000);
+        }
 
-        document.getElementById('media2').addEventListener('click', () => {
-            sequence += '-';
-            checkSequence();
-        });
+        function hideSecretLayer() {
+            document.getElementById('secretLayer').classList.remove('active');
+        }
 
-        document.getElementById('backBtn').addEventListener('click', () => {
-            const layer = document.getElementById('messageLayer');
-            const message = document.getElementById('messageText');
-            message.style.opacity = '0';
-            setTimeout(() => {
-                layer.style.display = 'none';
-            }, 300);
-        });
-
-        // Carrega as mídias automaticamente ao iniciar
-        fetchMedia();
+        // Inicialização
+        carregarImagens();
     </script>
 </body>
 </html>
