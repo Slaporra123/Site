@@ -60,7 +60,14 @@
         }
 
         video.media {
-            background: #000; /* Fundo preto para vídeos */
+            background: #000;
+        }
+
+        .error-message {
+            color: #ff1493;
+            font-size: 1.5em;
+            text-align: center;
+            margin-top: 20px;
         }
 
         .secret-layer {
@@ -128,12 +135,8 @@
     <h1>❤️o amor da minha vida❤️</h1>
 
     <div class="gallery">
-        <div class="media-container" data-code="•">
-            <img src="" alt="Mídia 1" class="media" id="media1">
-        </div>
-        <div class="media-container" data-code="-">
-            <img src="" alt="Mídia 2" class="media" id="media2">
-        </div>
+        <div class="media-container" data-code="•" id="container1"></div>
+        <div class="media-container" data-code="-" id="container2"></div>
     </div>
 
     <div class="secret-layer" id="secretLayer">
@@ -146,19 +149,30 @@
         <button class="back-button" onclick="hideSecretLayer()">Voltar</button>
     </div>
 
+    <div class="error-message" id="errorMessage"></div>
+
     <script>
         async function carregarImagens() {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = ''; // Limpa mensagens anteriores
+
             try {
                 const response = await fetch('/.netlify/functions/getGitHubMedia');
+                if (!response.ok) {
+                    throw new Error(`Erro na requisição: ${response.status}`);
+                }
                 const data = await response.json();
+                console.log('Dados recebidos:', data);
 
                 if (!data.media || data.media.length < 2) {
-                    throw new Error('Não há mídia suficiente');
+                    throw new Error('A pasta "Fotos" precisa conter pelo menos 2 arquivos de mídia');
                 }
 
-                data.media.forEach((item, index) => {
-                    const elementId = `media${index + 1}`;
-                    const container = document.getElementById(elementId).parentElement;
+                const shuffled = data.media.sort(() => Math.random() - 0.5);
+                const selectedMedia = shuffled.slice(0, 2);
+
+                selectedMedia.forEach((item, index) => {
+                    const container = document.getElementById(`container${index + 1}`);
                     if (item.type === 'image' || item.type === 'gif') {
                         container.innerHTML = `<img src="${item.url}" alt="Mídia ${index + 1}" class="media">`;
                     } else if (item.type === 'video') {
@@ -167,10 +181,10 @@
                 });
             } catch (error) {
                 console.error('Erro ao carregar mídia:', error);
+                errorDiv.textContent = error.message;
             }
         }
 
-        // Sistema de código secreto
         const secretCode = ['•', '•', '-'];
         let inputSequence = [];
 
@@ -204,7 +218,6 @@
             document.getElementById('secretLayer').classList.remove('active');
         }
 
-        // Inicialização
         carregarImagens();
     </script>
 </body>
