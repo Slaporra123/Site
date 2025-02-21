@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>💖</title>
     <style>
-        /* Estilos mantidos inalterados */
+        /* Estilos mantidos iguais */
         * {
             margin: 0;
             padding: 0;
@@ -106,42 +106,6 @@
             transform: scale(1.05);
         }
 
-        /* Novo estilo para o layout do console */
-        .console-layer {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 1000;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .console-layer.active {
-            display: flex;
-        }
-
-        .console-content {
-            background: #1e1e1e;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 1em;
-            color: #00ff00;
-            text-align: left;
-            white-space: pre-wrap;
-        }
-
         @media (max-width: 768px) {
             .gallery {
                 grid-template-columns: 1fr;
@@ -179,51 +143,28 @@
         <button class="back-button" onclick="hideSecretLayer()">Voltar</button>
     </div>
 
-    <!-- Novo layout para exibir o conteúdo do console -->
-    <div class="console-layer" id="consoleLayer">
-        <div class="console-content" id="consoleContent"></div>
-        <button class="back-button" onclick="hideConsoleLayer()">Voltar</button>
-    </div>
-
     <script>
         // Configurações do repositório
         const config = {
-            usuario: 'Slaporra123', // Substitua pelo seu usuário do GitHub
-            repositorio: 'Site',    // Substitua pelo nome do repositório
-            branch: 'main',         // Substitua pelo branch correto
-            pasta: 'Fotos'          // Substitua pela pasta onde estão as imagens
+            usuario: 'Slaporra123',
+            repositorio: 'Site',
+            branch: 'main',
+            pasta: 'Fotos',
+            token: process.env.GITHUB_TOKEN // Usa a variável de ambiente do Netlify
         };
-
-        // Token de acesso pessoal do GitHub (usando variável de ambiente)
-        const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // Acessa a variável de ambiente
 
         // Controle de imagens exibidas
         let displayedImages = new Set();
 
-        // Função para carregar imagens com cache e autenticação
+        // Carrega imagens aleatórias únicas
         async function carregarImagens() {
-            const cacheKey = `github-images-${config.usuario}-${config.repositorio}-${config.pasta}`;
-            const cacheExpiry = 60 * 60 * 1000; // 1 hora de cache
-
-            // Verifica se há cache válido
-            const cachedData = localStorage.getItem(cacheKey);
-            if (cachedData) {
-                const { timestamp, images } = JSON.parse(cachedData);
-                if (Date.now() - timestamp < cacheExpiry) {
-                    exibirImagens(images);
-                    return;
-                }
-            }
-
-            // Se não houver cache válido, faz a requisição à API
             try {
                 const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
                 const response = await fetch(apiUrl, {
                     headers: {
-                        Authorization: `Bearer ${GITHUB_TOKEN}`, // Autenticação com token
-                    },
+                        'Authorization': `token ${config.token}` // Usa o token da variável de ambiente
+                    }
                 });
-                if (!response.ok) throw new Error('Erro ao carregar imagens');
                 const files = await response.json();
 
                 const imagens = files
@@ -232,30 +173,30 @@
 
                 if (imagens.length < 2) throw new Error('Adicione pelo menos 2 imagens diferentes');
 
-                // Armazena no cache
-                localStorage.setItem(cacheKey, JSON.stringify({
-                    timestamp: Date.now(),
-                    images: imagens,
-                }));
+                // Filtra imagens já exibidas
+                const availableImages = imagens.filter(img => !displayedImages.has(img));
 
-                exibirImagens(imagens);
+                if (availableImages.length < 2) {
+                    displayedImages.clear();
+                    return carregarImagens();
+                }
+
+                const shuffled = availableImages.sort(() => Math.random() - 0.5);
+                const [img1, img2] = shuffled.slice(0, 2);
+
+                document.getElementById('photo1').src = img1;
+                document.getElementById('photo2').src = img2;
+
+                displayedImages.add(img1);
+                displayedImages.add(img2);
+
             } catch (error) {
-                console.error('Erro ao carregar imagens:', error);
+                console.error('Erro:', error);
             }
         }
 
-        // Função para exibir imagens na galeria
-        function exibirImagens(imagens) {
-            const shuffled = imagens.sort(() => Math.random() - 0.5);
-            const [img1, img2] = shuffled.slice(0, 2);
-
-            document.getElementById('photo1').src = img1;
-            document.getElementById('photo2').src = img2;
-        }
-
-        // Sistema de código secreto
-        const secretCode1 = ['•', '•', '-']; // Primeiro código secreto
-        const secretCode2 = ['-', '-', '-', '-', '•', '•', '•', '•', '-', '-', '-', '-', '•', '•', '•', '•']; // Segundo código secreto
+        // Sistema de código secreto melhorado
+        const secretCode = ['•', '•', '-'];
         let inputSequence = [];
 
         document.querySelectorAll('.photo-container').forEach(container => {
@@ -266,22 +207,17 @@
         });
 
         function checkSecretCode() {
-            // Verifica o primeiro código secreto
-            if (inputSequence.length === secretCode1.length && inputSequence.every((val, index) => val === secretCode1[index])) {
+            // Verifica a cada clique se o código parcial está correto
+            for (let i = 0; i < inputSequence.length; i++) {
+                if (inputSequence[i] !== secretCode[i]) {
+                    inputSequence = [];
+                    return;
+                }
+            }
+
+            // Se chegou ao tamanho do código e está correto
+            if (inputSequence.length === secretCode.length) {
                 showSecretLayer();
-                inputSequence = [];
-                return;
-            }
-
-            // Verifica o segundo código secreto
-            if (inputSequence.length === secretCode2.length && inputSequence.every((val, index) => val === secretCode2[index])) {
-                showConsoleLayer();
-                inputSequence = [];
-                return;
-            }
-
-            // Limpa a sequência se não corresponder a nenhum código
-            if (inputSequence.length >= secretCode2.length) {
                 inputSequence = [];
             }
         }
@@ -289,47 +225,11 @@
         function showSecretLayer() {
             const layer = document.getElementById('secretLayer');
             layer.classList.add('active');
-            setTimeout(hideSecretLayer, 25000); // Esconde a mensagem após 25 segundos
+            setTimeout(hideSecretLayer, 25000);
         }
 
         function hideSecretLayer() {
             document.getElementById('secretLayer').classList.remove('active');
-        }
-
-        // Funções para o layout do console
-        const consoleLogs = []; // Array para armazenar logs
-
-        // Captura logs automaticamente
-        (function captureLogs() {
-            const originalConsoleLog = console.log;
-            const originalConsoleError = console.error;
-            const originalConsoleWarn = console.warn;
-
-            console.log = function (...args) {
-                consoleLogs.push(`LOG: ${args.join(' ')}`);
-                originalConsoleLog.apply(console, args);
-            };
-
-            console.error = function (...args) {
-                consoleLogs.push(`ERROR: ${args.join(' ')}`);
-                originalConsoleError.apply(console, args);
-            };
-
-            console.warn = function (...args) {
-                consoleLogs.push(`WARN: ${args.join(' ')}`);
-                originalConsoleWarn.apply(console, args);
-            };
-        })();
-
-        function showConsoleLayer() {
-            const consoleContent = document.getElementById('consoleContent');
-            consoleContent.textContent = consoleLogs.join('\n'); // Exibe todos os logs
-            const layer = document.getElementById('consoleLayer');
-            layer.classList.add('active');
-        }
-
-        function hideConsoleLayer() {
-            document.getElementById('consoleLayer').classList.remove('active');
         }
 
         // Inicialização
