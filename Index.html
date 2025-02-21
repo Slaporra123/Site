@@ -194,6 +194,9 @@
             pasta: 'Fotos'          // Substitua pela pasta onde estão as imagens
         };
 
+        // Token de acesso pessoal do GitHub (use variáveis de ambiente no Netlify)
+        const GITHUB_TOKEN = 'SEU_TOKEN_AQUI'; // Substitua pelo seu token ou use process.env.GITHUB_TOKEN
+
         // Controle de imagens exibidas
         let displayedImages = new Set();
 
@@ -217,7 +220,7 @@
                 const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
                 const response = await fetch(apiUrl, {
                     headers: {
-                        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`, // Usando a variável de ambiente
+                        Authorization: `Bearer ${GITHUB_TOKEN}`, // Autenticação com token
                     },
                 });
                 if (!response.ok) throw new Error('Erro ao carregar imagens');
@@ -237,8 +240,7 @@
 
                 exibirImagens(imagens);
             } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao carregar imagens. Verifique o console para mais detalhes.');
+                console.error('Erro ao carregar imagens:', error);
             }
         }
 
@@ -313,6 +315,7 @@
             const originalConsoleError = console.error;
             const originalConsoleWarn = console.warn;
 
+            // Captura logs futuros
             console.log = function (...args) {
                 logs.push(`LOG: ${args.join(' ')}`);
                 originalConsoleLog.apply(console, args);
@@ -327,6 +330,10 @@
                 logs.push(`WARN: ${args.join(' ')}`);
                 originalConsoleWarn.apply(console, args);
             };
+
+            // Captura logs anteriores
+            const consoleLogs = console.history || [];
+            consoleLogs.forEach(log => logs.push(log));
 
             return logs.join('\n');
         }
