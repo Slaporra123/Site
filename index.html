@@ -39,24 +39,26 @@
             padding: 20px;
         }
 
-        .photo-container {
+        .media-container {
             position: relative;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 10px 20px rgba(255, 20, 147, 0.3);
             transition: transform 0.3s ease;
-            aspect-ratio: 1/1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #333; /* Fundo para áreas não cobertas pela mídia */
         }
 
-        .photo-container:hover {
+        .media-container:hover {
             transform: scale(1.03);
         }
 
-        .photo {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
+        .media {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 15px;
         }
 
         .secret-layer {
@@ -124,11 +126,11 @@
     <h1>❤️o amor da minha vida❤️</h1>
 
     <div class="gallery">
-        <div class="photo-container" data-code="•">
-            <img src="" alt="Ponto" class="photo" id="photo1">
+        <div class="media-container" data-code="•">
+            <div id="media1"></div>
         </div>
-        <div class="photo-container" data-code="-">
-            <img src="" alt="Traço" class="photo" id="photo2">
+        <div class="media-container" data-code="-">
+            <div id="media2"></div>
         </div>
     </div>
 
@@ -196,11 +198,11 @@
             token: token // Token reconstruído
         };
 
-        // Controle de imagens exibidas
-        let displayedImages = new Set();
+        // Controle de mídias exibidas
+        let displayedMedia = new Set();
 
-        // Carrega imagens aleatórias únicas
-        async function carregarImagens() {
+        // Carrega mídias aleatórias únicas
+        async function carregarMidias() {
             try {
                 const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
                 const response = await fetch(apiUrl, {
@@ -213,28 +215,31 @@
                 if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
 
                 const files = await response.json();
-                const imagens = files
-                    .filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name))
-                    .map(file => file.download_url);
+                const midias = files
+                    .filter(file => /\.(jpg|jpeg|png|gif|webp|mp4|webm)$/i.test(file.name))
+                    .map(file => ({
+                        url: file.download_url,
+                        type: file.name.match(/\.(jpg|jpeg|png|gif|webp|mp4|webm)$/i)[1].toLowerCase()
+                    }));
 
-                if (imagens.length < 2) throw new Error('Adicione pelo menos 2 imagens diferentes');
+                if (midias.length < 2) throw new Error('Adicione pelo menos 2 mídias diferentes');
 
-                // Filtra imagens já exibidas
-                const availableImages = imagens.filter(img => !displayedImages.has(img));
+                // Filtra mídias já exibidas
+                const availableMedia = midias.filter(media => !displayedMedia.has(media.url));
 
-                if (availableImages.length < 2) {
-                    displayedImages.clear();
-                    return carregarImagens();
+                if (availableMedia.length < 2) {
+                    displayedMedia.clear();
+                    return carregarMidias();
                 }
 
-                const shuffled = availableImages.sort(() => Math.random() - 0.5);
-                const [img1, img2] = shuffled.slice(0, 2);
+                const shuffled = availableMedia.sort(() => Math.random() - 0.5);
+                const [media1, media2] = shuffled.slice(0, 2);
 
-                document.getElementById('photo1').src = img1;
-                document.getElementById('photo2').src = img2;
+                exibirMidia(document.getElementById('media1'), media1);
+                exibirMidia(document.getElementById('media2'), media2);
 
-                displayedImages.add(img1);
-                displayedImages.add(img2);
+                displayedMedia.add(media1.url);
+                displayedMedia.add(media2.url);
 
             } catch (error) {
                 console.error('Erro:', error);
@@ -242,11 +247,31 @@
             }
         }
 
+        // Exibe a mídia no container
+        function exibirMidia(container, media) {
+            container.innerHTML = ''; // Limpa o conteúdo anterior
+            if (media.type === 'mp4' || media.type === 'webm') {
+                const video = document.createElement('video');
+                video.src = media.url;
+                video.autoplay = true;
+                video.loop = true;
+                video.muted = true;
+                video.classList.add('media');
+                container.appendChild(video);
+            } else {
+                const img = document.createElement('img');
+                img.src = media.url;
+                img.alt = 'Mídia';
+                img.classList.add('media');
+                container.appendChild(img);
+            }
+        }
+
         // Sistema de código secreto melhorado
         const secretCode = ['•', '•', '-'];
         let inputSequence = [];
 
-        document.querySelectorAll('.photo-container').forEach(container => {
+        document.querySelectorAll('.media-container').forEach(container => {
             container.addEventListener('click', () => {
                 inputSequence.push(container.dataset.code);
                 checkSecretCode();
@@ -280,7 +305,7 @@
         }
 
         // Inicialização
-        carregarImagens();
+        carregarMidias();
     </script>
 </body>
 </html>
