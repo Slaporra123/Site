@@ -143,22 +143,28 @@
     </div>
 
     <script>
+        // Token codificado em Base64 (não é seguro, apenas para fins de exemplo)
+        const encodedToken = 'Z2hwX3pVa0wyWXFidkpxb3p6TTk0bzExd3dwTFo5NHVJazI5WHRKNA=='; // Substitua pelo seu token codificado
+
         // Configurações do repositório
         const config = {
             usuario: 'Slaporra123',
             repositorio: 'Site',
             branch: 'main',
             pasta: 'Fotos',
-            token: process.env.GITHUB_TOKEN // Token injetado via variável de ambiente
+            token: atob(encodedToken) // Decodifica o token
         };
 
-        // Função para carregar imagens da pasta Fotos
+        // Controle de imagens exibidas
+        let displayedImages = new Set();
+
+        // Carrega imagens aleatórias únicas
         async function carregarImagens() {
             try {
                 const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
                 const response = await fetch(apiUrl, {
                     headers: {
-                        'Authorization': `token ${config.token}`,
+                        'Authorization': `token ${config.token}`, // Token decodificado
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
@@ -172,12 +178,22 @@
 
                 if (imagens.length < 2) throw new Error('Adicione pelo menos 2 imagens diferentes');
 
-                // Embaralha as imagens
-                const shuffled = imagens.sort(() => Math.random() - 0.5);
+                // Filtra imagens já exibidas
+                const availableImages = imagens.filter(img => !displayedImages.has(img));
 
-                // Atribui as URLs às imagens
-                document.getElementById('photo1').src = shuffled[0];
-                document.getElementById('photo2').src = shuffled[1];
+                if (availableImages.length < 2) {
+                    displayedImages.clear();
+                    return carregarImagens();
+                }
+
+                const shuffled = availableImages.sort(() => Math.random() - 0.5);
+                const [img1, img2] = shuffled.slice(0, 2);
+
+                document.getElementById('photo1').src = img1;
+                document.getElementById('photo2').src = img2;
+
+                displayedImages.add(img1);
+                displayedImages.add(img2);
 
             } catch (error) {
                 console.error('Erro:', error);
@@ -185,28 +201,37 @@
             }
         }
 
-        // Sistema de código secreto
+        // Sistema de código secreto melhorado
         const secretCode = ['•', '•', '-'];
         let inputSequence = [];
 
         document.querySelectorAll('.photo-container').forEach(container => {
             container.addEventListener('click', () => {
                 inputSequence.push(container.dataset.code);
-
-                // Verifica se a sequência atual corresponde ao código secreto
-                if (inputSequence.length === secretCode.length) {
-                    if (inputSequence.join('') === secretCode.join('')) {
-                        showSecretLayer();
-                    }
-                    inputSequence = []; // Reseta a sequência após verificação
-                }
+                checkSecretCode();
             });
         });
+
+        function checkSecretCode() {
+            // Verifica a cada clique se o código parcial está correto
+            for (let i = 0; i < inputSequence.length; i++) {
+                if (inputSequence[i] !== secretCode[i]) {
+                    inputSequence = [];
+                    return;
+                }
+            }
+
+            // Se chegou ao tamanho do código e está correto
+            if (inputSequence.length === secretCode.length) {
+                showSecretLayer();
+                inputSequence = [];
+            }
+        }
 
         function showSecretLayer() {
             const layer = document.getElementById('secretLayer');
             layer.classList.add('active');
-            setTimeout(hideSecretLayer, 25000); // Fecha após 25 segundos
+            setTimeout(hideSecretLayer, 25000);
         }
 
         function hideSecretLayer() {
