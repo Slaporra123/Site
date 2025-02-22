@@ -148,8 +148,7 @@
             usuario: 'Slaporra123',
             repositorio: 'Site',
             branch: 'main',
-            pasta: 'Fotos',
-            token: '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' // Token adicionado
+            pasta: 'Fotos'
         };
 
         // Controle de imagens exibidas
@@ -161,7 +160,7 @@
                 const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
                 const response = await fetch(apiUrl, {
                     headers: {
-                        'Authorization': `token ${config.token}`, // Token usado aqui
+                        'Authorization': 'token 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', // Token aqui
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
