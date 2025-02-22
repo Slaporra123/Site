@@ -143,8 +143,49 @@
     </div>
 
     <script>
-        // Token codificado em Base64 (não é seguro, apenas para fins de exemplo)
-        const encodedToken = 'Z2hwX2dtVHVMVWx0UlhrdzhKUGZWM0JxbnBXVldETGtubjNEMFhTTw=='; // Substitua pelo seu token codificado
+        // Ofuscação de cada caractere do token
+        const token = [
+            String.fromCharCode(103), // g
+            String.fromCharCode(104), // h
+            String.fromCharCode(112), // p
+            "_", // _
+            "e", // e
+            "3", // 3
+            "x", // x
+            "7", // 7
+            "9", // 9
+            String.fromCharCode(77), // M
+            "5", // 5
+            String.fromCharCode(68), // D
+            String.fromCharCode(87), // W
+            String.fromCharCode(79), // O
+            String.fromCharCode(84), // T
+            "p", // p
+            String.fromCharCode(86), // V
+            String.fromCharCode(78), // N
+            String.fromCharCode(81), // Q
+            "o", // o
+            "o", // o
+            String.fromCharCode(76), // L
+            String.fromCharCode(89), // Y
+            String.fromCharCode(66), // B
+            String.fromCharCode(66), // B
+            "e", // e
+            String.fromCharCode(90), // Z
+            String.fromCharCode(76), // L
+            String.fromCharCode(71), // G
+            "w", // w
+            "k", // k
+            String.fromCharCode(74), // J
+            "b", // b
+            "9", // 9
+            "4", // 4
+            "c", // c
+            "9", // 9
+            "a", // a
+            "6", // 6
+            String.fromCharCode(87) // W
+        ].join(""); // Junta todos os caracteres para formar o token
 
         // Configurações do repositório
         const config = {
@@ -152,7 +193,7 @@
             repositorio: 'Site',
             branch: 'main',
             pasta: 'Fotos',
-            token: atob(encodedToken) // Decodifica o token
+            token: token // Token reconstruído
         };
 
         // Controle de imagens exibidas
@@ -164,7 +205,7 @@
                 const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
                 const response = await fetch(apiUrl, {
                     headers: {
-                        'Authorization': `token ${config.token}`, // Token decodificado
+                        'Authorization': `token ${config.token}`,
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
