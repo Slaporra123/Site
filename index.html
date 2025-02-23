@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💖</title>
+    <title>💖 O Amor da Minha Vida 💖</title>
     <style>
         * {
             margin: 0;
@@ -18,25 +18,27 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 40px 20px;
+            justify-content: center;
+            padding: 20px;
             position: relative;
+            overflow: hidden;
         }
 
         h1 {
             color: #ff1493;
             font-size: 2.5em;
             text-shadow: 0 0 15px #ff1493;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
             text-align: center;
         }
 
         .gallery {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 30px;
-            max-width: 1200px;
+            display: flex;
+            gap: 20px;
+            max-width: 800px;
             width: 100%;
-            padding: 20px;
+            justify-content: center;
+            margin-bottom: 20px;
         }
 
         .media-container {
@@ -45,10 +47,9 @@
             overflow: hidden;
             box-shadow: 0 10px 20px rgba(255, 20, 147, 0.3);
             transition: transform 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #333; /* Fundo para áreas não cobertas pela mídia */
+            background: #333;
+            width: 150px; /* Tamanho padrão para telas menores */
+            height: 150px; /* Tamanho padrão para telas menores */
         }
 
         .media-container:hover {
@@ -56,9 +57,20 @@
         }
 
         .media {
-            max-width: 100%;
-            max-height: 100%;
-            border-radius: 15px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .contador {
+            color: #ff1493;
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+
+        .contador p {
+            margin: 5px 0;
         }
 
         .secret-layer {
@@ -69,13 +81,13 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.95);
-            z-index: 1000;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: #fff;
+            color: #ff1493;
             text-align: center;
-            padding: 20px;
+            font-size: 1.2em;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .secret-layer.active {
@@ -83,7 +95,7 @@
         }
 
         .secret-message {
-            font-size: 2em;
+            font-size: 1.5em;
             margin-bottom: 30px;
             color: #ff1493;
             text-shadow: 0 0 15px #ff1493;
@@ -93,7 +105,7 @@
 
         .back-button {
             padding: 12px 25px;
-            font-size: 1.2em;
+            font-size: 1em;
             background: #ff1493;
             color: #fff;
             border: none;
@@ -107,33 +119,74 @@
             transform: scale(1.05);
         }
 
-        @media (max-width: 768px) {
-            .gallery {
-                grid-template-columns: 1fr;
+        .heart, .balloon {
+            position: absolute;
+            font-size: 1.5em;
+            user-select: none;
+            pointer-events: none;
+            animation: float 6s ease-in infinite;
+        }
+
+        .heart {
+            color: #ff1493;
+        }
+
+        .balloon {
+            color: #fff;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(110vh) translateX(-50%); }
+            100% { transform: translateY(-10vh) translateX(50%); }
+        }
+
+        /* Ajustes para telas maiores */
+        @media (min-width: 768px) {
+            .media-container {
+                width: 200px;
+                height: 200px;
             }
-            
+
             h1 {
-                font-size: 1.8em;
+                font-size: 3em;
+            }
+
+            .contador {
+                font-size: 1.5em;
             }
 
             .secret-message {
-                font-size: 1.5em;
+                font-size: 1.8em;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .media-container {
+                width: 250px;
+                height: 250px;
             }
         }
     </style>
 </head>
 <body>
-    <h1>❤️o amor da minha vida❤️</h1>
+    <h1>💖 O Amor da Minha Vida 💖</h1>
 
     <div class="gallery">
         <div class="media-container" data-code="•">
-            <div id="media1"></div>
+            <div id="media1" class="media"></div>
         </div>
         <div class="media-container" data-code="-">
-            <div id="media2"></div>
+            <div id="media2" class="media"></div>
         </div>
     </div>
 
+    <!-- Contador de Dias Juntos -->
+    <div class="contador" id="contador">
+        <p id="tempoConhecemos"></p>
+        <p id="tempoNamoro"></p>
+    </div>
+
+    <!-- Camada secreta -->
     <div class="secret-layer" id="secretLayer">
         <div class="secret-message">
             Eu amo MUITO te ter na minha vida,<br>
@@ -144,7 +197,118 @@
         <button class="back-button" onclick="hideSecretLayer()">Voltar</button>
     </div>
 
+    <!-- Biblioteca de partículas -->
+    <div id="particles-js"></div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
+        // Configuração do Particles.js
+        particlesJS("particles-js", {
+            particles: {
+                number: {
+                    value: 50, // Número máximo de partículas
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: "#ff1493" // Cor das partículas
+                },
+                shape: {
+                    type: "circle", // Formato das partículas
+                    stroke: {
+                        width: 0,
+                        color: "#000000"
+                    },
+                    polygon: {
+                        nb_sides: 5
+                    }
+                },
+                opacity: {
+                    value: 0.5,
+                    random: false,
+                    anim: {
+                        enable: false,
+                        speed: 1,
+                        opacity_min: 0.1,
+                        sync: false
+                    }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    anim: {
+                        enable: false,
+                        speed: 40,
+                        size_min: 0.1,
+                        sync: false
+                    }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#ff1493",
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 6,
+                    direction: "none",
+                    random: false,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false,
+                    attract: {
+                        enable: false,
+                        rotateX: 600,
+                        rotateY: 1200
+                    }
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: {
+                        enable: false, // Desativar interação com o mouse
+                        mode: "repulse"
+                    },
+                    onclick: {
+                        enable: false, // Desativar criação de partículas ao clicar
+                        mode: "push"
+                    },
+                    resize: true
+                },
+                modes: {
+                    grab: {
+                        distance: 400,
+                        line_linked: {
+                            opacity: 1
+                        }
+                    },
+                    bubble: {
+                        distance: 400,
+                        size: 40,
+                        duration: 2,
+                        opacity: 8,
+                        speed: 3
+                    },
+                    repulse: {
+                        distance: 200,
+                        duration: 0.4
+                    },
+                    push: {
+                        particles_nb: 0 // Nenhuma partícula é criada ao clicar
+                    },
+                    remove: {
+                        particles_nb: 2
+                    }
+                }
+            },
+            retina_detect: true
+        });
+
         // Ofuscação de cada caractere do token
         const token = [
             String.fromCharCode(103), // g
@@ -267,42 +431,171 @@
             }
         }
 
-        // Sistema de código secreto melhorado
-        const secretCode = ['•', '•', '-'];
+        // Sistema de código secreto
+        const secretCode = ['•', '•', '-']; // Código secreto para a mensagem
         let inputSequence = [];
 
+        // Adiciona eventos de clique aos contêineres de mídia
         document.querySelectorAll('.media-container').forEach(container => {
             container.addEventListener('click', () => {
-                inputSequence.push(container.dataset.code);
-                checkSecretCode();
+                inputSequence.push(container.dataset.code); // Adiciona o código ao array
+                checkSecretCode(); // Verifica o código
             });
         });
 
+        // Verifica se o código secreto foi inserido corretamente
         function checkSecretCode() {
-            // Verifica a cada clique se o código parcial está correto
-            for (let i = 0; i < inputSequence.length; i++) {
-                if (inputSequence[i] !== secretCode[i]) {
-                    inputSequence = [];
-                    return;
-                }
+            if (inputSequence.length > secretCode.length) {
+                inputSequence.shift(); // Remove o primeiro item se a sequência for maior que o código
             }
 
-            // Se chegou ao tamanho do código e está correto
-            if (inputSequence.length === secretCode.length) {
-                showSecretLayer();
-                inputSequence = [];
+            // Verifica se a sequência atual corresponde ao código secreto
+            if (inputSequence.join('') === secretCode.join('')) {
+                showSecretLayer(); // Mostra a camada secreta
+                inputSequence = []; // Reseta a sequência
             }
         }
 
+        // Mostra a camada secreta
         function showSecretLayer() {
-            const layer = document.getElementById('secretLayer');
-            layer.classList.add('active');
-            setTimeout(hideSecretLayer, 25000);
+            document.getElementById('secretLayer').classList.add('active');
         }
 
+        // Esconde a camada secreta
         function hideSecretLayer() {
             document.getElementById('secretLayer').classList.remove('active');
         }
+
+        // Datas importantes
+        const dataConhecemos = new Date(2024, 6, 11, 16, 24); // 11 de julho de 2024, 16:24
+        const dataNamoro = new Date(2024, 6, 26, 23, 30); // 26 de julho de 2024, 23:30
+
+        // Função para calcular a diferença de tempo
+        function calcularDiferenca(dataInicial) {
+            const agora = new Date();
+            const diferenca = agora - dataInicial;
+
+            const segundos = Math.floor(diferenca / 1000);
+            const minutos = Math.floor(segundos / 60);
+            const horas = Math.floor(minutos / 60);
+            const dias = Math.floor(horas / 24);
+            const meses = Math.floor(dias / 30);
+            const anos = Math.floor(meses / 12);
+
+            return {
+                anos: anos,
+                meses: meses % 12,
+                dias: dias % 30,
+                horas: horas % 24,
+                minutos: minutos % 60,
+                segundos: segundos % 60
+            };
+        }
+
+        // Função para formatar o tempo
+        function formatarTempo(tempo) {
+            return `${tempo.anos} anos, ${tempo.meses} meses, ${tempo.dias} dias, ${tempo.horas} horas, ${tempo.minutos} minutos e ${tempo.segundos} segundos`;
+        }
+
+        // Atualiza o contador
+        function atualizarContador() {
+            const tempoConhecemos = calcularDiferenca(dataConhecemos);
+            const tempoNamoro = calcularDiferenca(dataNamoro);
+
+            document.getElementById('tempoConhecemos').textContent = 
+                `Fazem exatamente ${formatarTempo(tempoConhecemos)} que eu conheci o amor da minha vida.`;
+
+            document.getElementById('tempoNamoro').textContent = 
+                `${formatarTempo(tempoNamoro)} que eu finalmente ganhei o coração dela e começamos a escrever nossa história.`;
+        }
+
+        // Função para criar corações e balões
+        function criarFesta() {
+            const emojisCoracao = ['💖', '💕', '💞', '💓', '💗'];
+            const emojisBalao = ['🎈', '🎈', '🎈', '🎈', '🎈'];
+
+            for (let i = 0; i < 10; i++) {
+                const coracao = document.createElement('div');
+                coracao.classList.add('heart');
+                coracao.textContent = emojisCoracao[Math.floor(Math.random() * emojisCoracao.length)];
+                coracao.style.left = `${Math.random() * 100}vw`;
+                coracao.style.animationDuration = `${Math.random() * 4 + 3}s`;
+                document.body.appendChild(coracao);
+
+                const balao = document.createElement('div');
+                balao.classList.add('balloon');
+                balao.textContent = emojisBalao[Math.floor(Math.random() * emojisBalao.length)];
+                balao.style.left = `${Math.random() * 100}vw`;
+                balao.style.animationDuration = `${Math.random() * 4 + 3}s`;
+                document.body.appendChild(balao);
+            }
+
+            // Exibe a mensagem de aniversário
+            const tempoNamoro = calcularDiferenca(dataNamoro);
+            let mensagem = 'Feliz ';
+
+            if (tempoNamoro.anos > 0) {
+                mensagem += `${tempoNamoro.anos} ano${tempoNamoro.anos > 1 ? 's' : ''} `;
+            }
+            if (tempoNamoro.meses > 0 && tempoNamoro.meses < 12) {
+                mensagem += `${tempoNamoro.meses} mês${tempoNamoro.meses > 1 ? 'es' : ''} `;
+            }
+
+            mensagem += 'de namoro, minha vampirinha 🧛‍♀️🦇🖤';
+
+            const contador = document.getElementById('contador');
+            contador.innerHTML = `<p>${mensagem}</p>`;
+        }
+
+        // Comando secreto para ativar a festa
+        let clicksPrimeiraImagem = 0;
+        let clicksSegundaImagem = 0;
+
+        document.getElementById('media1').addEventListener('click', () => {
+            clicksPrimeiraImagem++;
+            verificarComandoSecreto();
+        });
+
+        document.getElementById('media2').addEventListener('click', () => {
+            clicksSegundaImagem++;
+            verificarComandoSecreto();
+        });
+
+        function verificarComandoSecreto() {
+            if (clicksPrimeiraImagem >= 10 && clicksSegundaImagem >= 10) {
+                criarFesta();
+                clicksPrimeiraImagem = 0;
+                clicksSegundaImagem = 0;
+            }
+        }
+
+        // Função para organizar as partículas em "te amo Laura"
+        function organizarParticulas() {
+            const texto = "te amo Laura";
+            const canvas = document.querySelector("#particles-js canvas");
+            const ctx = canvas.getContext("2d");
+
+            // Limpa o canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Define a fonte e o tamanho do texto
+            ctx.font = "30px Arial";
+            ctx.fillStyle = "#ff1493";
+            ctx.textAlign = "center";
+
+            // Desenha o texto no centro do canvas
+            ctx.fillText(texto, canvas.width / 2, canvas.height / 2);
+        }
+
+        // Verifica se é o dia do aniversário de namoro
+        const hoje = new Date();
+        if (hoje.getMonth() === 6 && hoje.getDate() === 26) { // 26 de julho
+            organizarParticulas();
+        }
+
+        // Atualiza o contador a cada segundo
+        setInterval(atualizarContador, 1000);
+        atualizarContador(); // Chama a função imediatamente para evitar atraso inicial
 
         // Inicialização
         carregarMidias();
