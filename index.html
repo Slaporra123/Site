@@ -469,9 +469,9 @@
             document.getElementById('secretLayer').classList.remove('active');
         }
 
-        // Datas importantes
-        const dataConhecemos = moment.tz("2024-07-11", "America/Sao_Paulo"); // 11 de julho de 2024
-        const dataNamoro = moment.tz("2024-07-26", "America/Sao_Paulo"); // 26 de julho de 2024
+        // Datas importantes com horas específicas
+        const dataConhecemos = moment.tz("2024-07-11 16:24", "YYYY-MM-DD HH:mm", "America/Sao_Paulo"); // 11 de julho de 2024 às 16:24
+        const dataNamoro = moment.tz("2024-07-26 23:30", "YYYY-MM-DD HH:mm", "America/Sao_Paulo"); // 26 de julho de 2024 às 23:30
 
         // Função para calcular a diferença de tempo usando Moment.js
         function calcularDiferenca(dataInicial) {
