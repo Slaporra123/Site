@@ -200,6 +200,9 @@
     <!-- Biblioteca de partículas -->
     <div id="particles-js"></div>
 
+    <!-- Biblioteca Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
         // Configuração do Particles.js
@@ -467,28 +470,37 @@
         }
 
         // Datas importantes
-        const dataConhecemos = new Date(2024, 7, 11, 16, 24); // 11 de julho de 2024, 16:24
-        const dataNamoro = new Date(2024, 7, 26, 23, 30); // 26 de julho de 2024, 23:30
+        const dataConhecemos = moment.tz("2024-07-11", "America/Sao_Paulo"); // 11 de julho de 2024
+        const dataNamoro = moment.tz("2024-07-26", "America/Sao_Paulo"); // 26 de julho de 2024
 
-        // Função para calcular a diferença de tempo
+        // Função para calcular a diferença de tempo usando Moment.js
         function calcularDiferenca(dataInicial) {
-            const agora = new Date();
-            const diferenca = agora - dataInicial;
+            const agora = moment.tz("America/Sao_Paulo"); // Data atual no fuso horário de Brasília
 
-            const segundos = Math.floor(diferenca / 1000);
-            const minutos = Math.floor(segundos / 60);
-            const horas = Math.floor(minutos / 60);
-            const dias = Math.floor(horas / 24);
-            const meses = Math.floor(dias / 30);
-            const anos = Math.floor(meses / 12);
+            const anos = agora.diff(dataInicial, 'years');
+            dataInicial.add(anos, 'years');
+
+            const meses = agora.diff(dataInicial, 'months');
+            dataInicial.add(meses, 'months');
+
+            const dias = agora.diff(dataInicial, 'days');
+            dataInicial.add(dias, 'days');
+
+            const horas = agora.diff(dataInicial, 'hours');
+            dataInicial.add(horas, 'hours');
+
+            const minutos = agora.diff(dataInicial, 'minutes');
+            dataInicial.add(minutos, 'minutes');
+
+            const segundos = agora.diff(dataInicial, 'seconds');
 
             return {
                 anos: anos,
-                meses: meses % 12,
-                dias: dias % 30,
-                horas: horas % 24,
-                minutos: minutos % 60,
-                segundos: segundos % 60
+                meses: meses,
+                dias: dias,
+                horas: horas,
+                minutos: minutos,
+                segundos: segundos
             };
         }
 
@@ -499,8 +511,8 @@
 
         // Atualiza o contador
         function atualizarContador() {
-            const tempoConhecemos = calcularDiferenca(dataConhecemos);
-            const tempoNamoro = calcularDiferenca(dataNamoro);
+            const tempoConhecemos = calcularDiferenca(moment(dataConhecemos));
+            const tempoNamoro = calcularDiferenca(moment(dataNamoro));
 
             document.getElementById('tempoConhecemos').textContent = 
                 `Fazem exatamente ${formatarTempo(tempoConhecemos)} que eu conheci o amor da minha vida.`;
@@ -563,7 +575,8 @@
 
         function verificarComandoSecreto() {
             if (clicksPrimeiraImagem >= 10 && clicksSegundaImagem >= 10) {
-                criarFesta();
+                organizarParticulas(); // Organiza as partículas para escrever "te amo Laura"
+                criarFesta(); // Cria a festa de corações e balões
                 clicksPrimeiraImagem = 0;
                 clicksSegundaImagem = 0;
             }
@@ -588,8 +601,8 @@
         }
 
         // Verifica se é o dia do aniversário de namoro
-        const hoje = new Date();
-        if (hoje.getMonth() === 6 && hoje.getDate() === 26) { // 26 de julho
+        const hoje = moment.tz("America/Sao_Paulo"); // Data atual no fuso horário de Brasília
+        if (hoje.month() === 6 && hoje.date() === 26) { // 26 de julho
             organizarParticulas();
         }
 
