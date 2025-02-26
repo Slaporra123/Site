@@ -166,6 +166,25 @@
                 height: 250px;
             }
         }
+
+        /* Novo estilo para a mensagem de aniversário */
+        .anniversary-message {
+            display: none; /* Inicialmente oculta */
+            color: #ff1493;
+            text-align: center;
+            font-size: 1.5em;
+            margin-top: 20px;
+            text-shadow: 0 0 15px #ff1493;
+        }
+
+        .anniversary-message.active {
+            display: block; /* Exibe a mensagem */
+        }
+
+        /* Oculta o contador no dia 26 */
+        .contador.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -185,6 +204,9 @@
         <p id="tempoConhecemos"></p>
         <p id="tempoNamoro"></p>
     </div>
+
+    <!-- Mensagem de aniversário -->
+    <div class="anniversary-message" id="anniversaryMessage"></div>
 
     <!-- Camada secreta -->
     <div class="secret-layer" id="secretLayer">
@@ -521,10 +543,13 @@
                 `${formatarTempo(tempoNamoro)} que eu finalmente ganhei o coração dela e começamos a escrever nossa história.`;
         }
 
-        // Função para criar corações e balões
+        // Função para criar corações e balões (MODIFICADA)
         function criarFesta() {
             const emojisCoracao = ['💖', '💕', '💞', '💓', '💗'];
             const emojisBalao = ['🎈', '🎈', '🎈', '🎈', '🎈'];
+
+            // Limpa elementos anteriores
+            document.querySelectorAll('.heart, .balloon').forEach(el => el.remove());
 
             for (let i = 0; i < 10; i++) {
                 const coracao = document.createElement('div');
@@ -542,76 +567,57 @@
                 document.body.appendChild(balao);
             }
 
-            // Exibe a mensagem de aniversário
+            // Exibe a mensagem de aniversário no lugar do contador
             const tempoNamoro = calcularDiferenca(dataNamoro);
+            let mesesArredondados = tempoNamoro.meses + 1;
             let mensagem = 'Feliz ';
 
             if (tempoNamoro.anos > 0) {
                 mensagem += `${tempoNamoro.anos} ano${tempoNamoro.anos > 1 ? 's' : ''} `;
             }
-            if (tempoNamoro.meses > 0 && tempoNamoro.meses < 12) {
-                mensagem += `${tempoNamoro.meses} mês${tempoNamoro.meses > 1 ? 'es' : ''} `;
+            if (mesesArredondados > 0 && mesesArredondados < 12) {
+                mensagem += `${mesesArredondados} mês${mesesArredondados > 1 ? 'es' : ''} `;
             }
 
             mensagem += 'de namoro, minha vampirinha 🧛‍♀️🦇🖤';
+            
+            const anniversaryMessage = document.getElementById('anniversaryMessage');
+            anniversaryMessage.textContent = mensagem;
+            anniversaryMessage.classList.add('active');
 
-            const contador = document.getElementById('contador');
-            contador.innerHTML = `<p>${mensagem}</p>`;
+            // Oculta o contador
+            document.getElementById('contador').classList.add('hidden');
         }
 
-        // Comando secreto para ativar a festa
-        let clicksPrimeiraImagem = 0;
-        let clicksSegundaImagem = 0;
+        // Verificação de data (MODIFICADA)
+        function verificarAniversario() {
+            const hoje = moment.tz("America/Sao_Paulo");
+            const horaAtual = hoje.hours();
+            const minutosAtuais = hoje.minutes();
 
-        document.getElementById('media1').addEventListener('click', () => {
-            clicksPrimeiraImagem++;
-            verificarComandoSecreto();
-        });
-
-        document.getElementById('media2').addEventListener('click', () => {
-            clicksSegundaImagem++;
-            verificarComandoSecreto();
-        });
-
-        function verificarComandoSecreto() {
-            if (clicksPrimeiraImagem >= 10 && clicksSegundaImagem >= 10) {
-                organizarParticulas(); // Organiza as partículas para escrever "te amo Laura"
-                criarFesta(); // Cria a festa de corações e balões
-                clicksPrimeiraImagem = 0;
-                clicksSegundaImagem = 0;
+            if (hoje.date() === 26) {
+                if (horaAtual < 23 || (horaAtual === 23 && minutosAtuais <= 30)) {
+                    criarFesta();
+                } else {
+                    // Limpa a festa se passar do horário
+                    document.getElementById('anniversaryMessage').classList.remove('active');
+                    document.getElementById('contador').classList.remove('hidden');
+                    document.querySelectorAll('.heart, .balloon').forEach(el => el.remove());
+                }
             }
         }
 
-        // Função para organizar as partículas em "te amo Laura"
-        function organizarParticulas() {
-            const texto = "te amo Laura";
-            const canvas = document.querySelector("#particles-js canvas");
-            const ctx = canvas.getContext("2d");
+        // Atualizações finais (MODIFICADO)
+        setInterval(() => {
+            atualizarContador();
+            verificarAniversario(); // Verifica a cada minuto
+        }, 60000);
 
-            // Limpa o canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Define a fonte e o tamanho do texto
-            ctx.font = "30px Arial";
-            ctx.fillStyle = "#ff1493";
-            ctx.textAlign = "center";
-
-            // Desenha o texto no centro do canvas
-            ctx.fillText(texto, canvas.width / 2, canvas.height / 2);
-        }
-
-        // Verifica se é o dia do aniversário de namoro
-        const hoje = moment.tz("America/Sao_Paulo"); // Data atual no fuso horário de Brasília
-        if (hoje.month() === 6 && hoje.date() === 26) { // 26 de julho
-            organizarParticulas();
-        }
-
-        // Atualiza o contador a cada segundo
-        setInterval(atualizarContador, 1000);
-        atualizarContador(); // Chama a função imediatamente para evitar atraso inicial
-
-        // Inicialização
-        carregarMidias();
+        // Inicialização (MODIFICADA)
+        carregarMidias().then(() => {
+            atualizarContador();
+            verificarAniversario();
+        });
     </script>
 </body>
 </html>
