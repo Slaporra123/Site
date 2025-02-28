@@ -185,6 +185,85 @@
         .contador.hidden {
             display: none;
         }
+
+        /* Estilo para o menu de minigames */
+        .minigames-menu {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .minigames-menu.active {
+            display: block;
+        }
+
+        .minigames-menu button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background: #ff1493;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+
+        .minigames-menu button:hover {
+            background: #ff0066;
+            transform: scale(1.05);
+        }
+
+        /* Estilo para o quebra-cabeça */
+        .puzzle-container {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .puzzle-piece {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .puzzle-piece img {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+        }
+
+        .empty {
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            cursor: not-allowed;
+        }
+
+        .locked {
+            cursor: not-allowed;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -214,9 +293,22 @@
             Eu amo MUITO te ter na minha vida,<br>
             amo te amar e prometo te fazer<br>
             a mulher mais feliz do mundo<br>
-            enquanto a gente ainda respirar 💘
+            enquanto a gente ainda respirar <span id="heartClick" style="cursor: pointer;">💘</span>
         </div>
         <button class="back-button" onclick="hideSecretLayer()">Voltar</button>
+    </div>
+
+    <!-- Menu de Minigames -->
+    <div class="minigames-menu" id="minigamesMenu">
+        <h2>Minigames</h2>
+        <button onclick="startPuzzle()">Quebra-Cabeça</button>
+    </div>
+
+    <!-- Quebra-Cabeça -->
+    <div id="puzzleGame" style="display: none;">
+        <img id="guide-image" src="" alt="Guia do Quebra-Cabeça">
+        <div id="puzzle-container" class="puzzle-container"></div>
+        <div id="message">Carregando quebra-cabeça...</div>
     </div>
 
     <!-- Biblioteca de partículas -->
@@ -334,57 +426,12 @@
             retina_detect: true
         });
 
-        // Ofuscação de cada caractere do token
-        const token = [
-            String.fromCharCode(103), // g
-            String.fromCharCode(104), // h
-            String.fromCharCode(112), // p
-            "_", // _
-            "e", // e
-            "3", // 3
-            "x", // x
-            "7", // 7
-            "9", // 9
-            String.fromCharCode(77), // M
-            "5", // 5
-            String.fromCharCode(68), // D
-            String.fromCharCode(87), // W
-            String.fromCharCode(79), // O
-            String.fromCharCode(84), // T
-            "p", // p
-            String.fromCharCode(86), // V
-            String.fromCharCode(78), // N
-            String.fromCharCode(81), // Q
-            "o", // o
-            "o", // o
-            String.fromCharCode(76), // L
-            String.fromCharCode(89), // Y
-            String.fromCharCode(66), // B
-            String.fromCharCode(66), // B
-            "e", // e
-            String.fromCharCode(90), // Z
-            String.fromCharCode(76), // L
-            String.fromCharCode(71), // G
-            "w", // w
-            "k", // k
-            String.fromCharCode(74), // J
-            "b", // b
-            "9", // 9
-            "4", // 4
-            "c", // c
-            "9", // 9
-            "a", // a
-            "6", // 6
-            String.fromCharCode(87) // W
-        ].join(""); // Junta todos os caracteres para formar o token
-
         // Configurações do repositório
         const config = {
             usuario: 'Slaporra123',
             repositorio: 'Site',
             branch: 'main',
-            pasta: 'Fotos',
-            token: token // Token reconstruído
+            pasta: 'Fotos'
         };
 
         // Controle de mídias exibidas
@@ -394,12 +441,7 @@
         async function carregarMidias() {
             try {
                 const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
-                const response = await fetch(apiUrl, {
-                    headers: {
-                        'Authorization': `token ${config.token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
+                const response = await fetch(apiUrl);
 
                 if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
 
@@ -618,6 +660,165 @@
             atualizarContador();
             verificarAniversario();
         });
+
+        // Função para mostrar o menu de minigames
+        document.getElementById('heartClick').addEventListener('click', () => {
+            document.getElementById('minigamesMenu').classList.add('active');
+        });
+
+        // Função para iniciar o quebra-cabeça
+        function startPuzzle() {
+            document.getElementById('minigamesMenu').classList.remove('active');
+            document.getElementById('puzzleGame').style.display = 'block';
+            initializePuzzle();
+        }
+
+        // Código do quebra-cabeça
+        function initializePuzzle() {
+            const guideImage = document.getElementById('guide-image');
+            const puzzleContainer = document.getElementById('puzzle-container');
+            const message = document.getElementById('message');
+
+            let pieces = [];
+            let emptyIndex = 8;
+            let isGameOver = false;
+
+            async function fetchImages() {
+                try {
+                    const response = await fetch(`https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`);
+                    if (!response.ok) throw new Error('Erro ao carregar imagens');
+                    const data = await response.json();
+                    const imageFiles = data.filter(file => 
+                        file.type === 'file' && file.name.match(/\.(jpg|jpeg|png|gif)$/i)
+                    );
+                    if (imageFiles.length === 0) throw new Error('Nenhuma imagem encontrada');
+                    return imageFiles.map(file => file.download_url);
+                } catch (error) {
+                    message.textContent = error.message;
+                    return [];
+                }
+            }
+
+            function createPuzzle(image) {
+                pieces = [];
+                puzzleContainer.innerHTML = '';
+
+                guideImage.src = image.src;
+
+                const numbers = [1, 4, 7, 2, 5, 8, 3, 6, 9];
+
+                for (let i = 0; i < 9; i++) {
+                    const piece = document.createElement('div');
+                    piece.className = 'puzzle-piece' + (i === emptyIndex ? ' empty' : '');
+                    
+                    if (i !== emptyIndex) {
+                        const img = document.createElement('img');
+                        img.src = image.src;
+                        img.style.left = `-${(i % 3) * 100}px`;
+                        img.style.top = `-${Math.floor(i / 3) * 100}px`;
+                        piece.appendChild(img);
+
+                        const number = document.createElement('div');
+                        number.textContent = numbers[i];
+                        piece.appendChild(number);
+                    }
+                    
+                    pieces.push(piece);
+                    puzzleContainer.appendChild(piece);
+                }
+
+                puzzleContainer.addEventListener('click', (e) => {
+                    if (isGameOver) return;
+
+                    const clickedPiece = e.target.closest('.puzzle-piece');
+                    if (!clickedPiece || clickedPiece.classList.contains('empty')) return;
+                    
+                    const clickedIndex = pieces.indexOf(clickedPiece);
+                    if (getAdjacentIndices(clickedIndex).includes(emptyIndex)) {
+                        swapPieces(clickedIndex, emptyIndex);
+                        emptyIndex = clickedIndex;
+                        checkWin();
+                    }
+                });
+            }
+
+            function getAdjacentIndices(index) {
+                const adjacent = [];
+                const row = Math.floor(index / 3);
+                const col = index % 3;
+
+                if (row > 0) adjacent.push(index - 3);
+                if (row < 2) adjacent.push(index + 3);
+                if (col > 0) adjacent.push(index - 1);
+                if (col < 2) adjacent.push(index + 1);
+
+                return adjacent;
+            }
+
+            function swapPieces(index1, index2) {
+                const tempHTML = pieces[index1].innerHTML;
+                pieces[index1].innerHTML = pieces[index2].innerHTML;
+                pieces[index2].innerHTML = tempHTML;
+
+                pieces[index1].classList.toggle('empty');
+                pieces[index2].classList.toggle('empty');
+            }
+
+            function checkWin() {
+                const numbers = [1, 4, 7, 2, 5, 8, 3, 6, 9];
+                const isWin = pieces.every((piece, index) => {
+                    if (index === emptyIndex) return true;
+                    const number = piece.querySelector('div');
+                    return number && number.textContent == numbers[index];
+                });
+
+                if (isWin) {
+                    const emptyPiece = pieces[emptyIndex];
+                    const img = document.createElement('img');
+                    img.src = pieces[0].querySelector('img').src;
+                    img.style.left = `-${(emptyIndex % 3) * 100}px`;
+                    img.style.top = `-${Math.floor(emptyIndex / 3) * 100}px`;
+                    emptyPiece.innerHTML = '';
+                    emptyPiece.appendChild(img);
+                    emptyPiece.classList.remove('empty');
+
+                    message.textContent = 'Parabéns! Você venceu! 🎉';
+
+                    isGameOver = true;
+                    pieces.forEach(piece => piece.classList.add('locked'));
+                }
+            }
+
+            function shufflePieces() {
+                let shuffleSteps = 150;
+                const shuffleInterval = setInterval(() => {
+                    if (shuffleSteps <= 0) {
+                        clearInterval(shuffleInterval);
+                        message.textContent = 'Clique nas peças para movê-las!';
+                        return;
+                    }
+
+                    const adjacent = getAdjacentIndices(emptyIndex);
+                    const randomIndex = adjacent[Math.floor(Math.random() * adjacent.length)];
+                    swapPieces(randomIndex, emptyIndex);
+                    emptyIndex = randomIndex;
+                    shuffleSteps--;
+                }, 50);
+            }
+
+            const imageUrls = await fetchImages();
+            if (imageUrls.length > 0) {
+                const image = new Image();
+                image.src = imageUrls[Math.floor(Math.random() * imageUrls.length)];
+                image.onload = () => {
+                    createPuzzle(image);
+                    shufflePieces();
+                };
+                image.onerror = () => message.textContent = 'Erro ao carregar a imagem.';
+            } else {
+                message.textContent = 'Nenhuma imagem encontrada na pasta Fotos.';
+            }
+        }
     </script>
 </body>
 </html>
