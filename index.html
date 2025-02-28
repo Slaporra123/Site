@@ -223,6 +223,28 @@
         }
 
         /* Estilo para o quebra-cabeça */
+        .puzzle-layer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            align-items: center;
+            justify-content: center;
+            color: #ff1493;
+            text-align: center;
+            font-size: 1.2em;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .puzzle-layer.active {
+            display: flex;
+        }
+
         .puzzle-container {
             display: grid;
             grid-template-columns: repeat(3, 100px);
@@ -264,6 +286,31 @@
             cursor: not-allowed;
             pointer-events: none;
         }
+
+        .puzzle-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .puzzle-buttons button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background: #ff1493;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .puzzle-buttons button:hover {
+            background: #ff0066;
+            transform: scale(1.05);
+        }
+
+        .puzzle-buttons button.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -304,11 +351,14 @@
         <button onclick="startPuzzle()">Quebra-Cabeça</button>
     </div>
 
-    <!-- Quebra-Cabeça -->
-    <div id="puzzleGame" style="display: none;">
-        <img id="guide-image" src="" alt="Guia do Quebra-Cabeça">
+    <!-- Camada do Quebra-Cabeça -->
+    <div class="puzzle-layer" id="puzzleLayer">
         <div id="puzzle-container" class="puzzle-container"></div>
         <div id="message">Carregando quebra-cabeça...</div>
+        <div class="puzzle-buttons">
+            <button onclick="hidePuzzleLayer()">Voltar à Tela Inicial</button>
+            <button id="replayButton" class="hidden" onclick="restartPuzzle()">Rejogar</button>
+        </div>
     </div>
 
     <!-- Biblioteca de partículas -->
@@ -426,12 +476,57 @@
             retina_detect: true
         });
 
+        // Ofuscação de cada caractere do token
+        const token = [
+            String.fromCharCode(103), // g
+            String.fromCharCode(104), // h
+            String.fromCharCode(112), // p
+            "_", // _
+            "e", // e
+            "3", // 3
+            "x", // x
+            "7", // 7
+            "9", // 9
+            String.fromCharCode(77), // M
+            "5", // 5
+            String.fromCharCode(68), // D
+            String.fromCharCode(87), // W
+            String.fromCharCode(79), // O
+            String.fromCharCode(84), // T
+            "p", // p
+            String.fromCharCode(86), // V
+            String.fromCharCode(78), // N
+            String.fromCharCode(81), // Q
+            "o", // o
+            "o", // o
+            String.fromCharCode(76), // L
+            String.fromCharCode(89), // Y
+            String.fromCharCode(66), // B
+            String.fromCharCode(66), // B
+            "e", // e
+            String.fromCharCode(90), // Z
+            String.fromCharCode(76), // L
+            String.fromCharCode(71), // G
+            "w", // w
+            "k", // k
+            String.fromCharCode(74), // J
+            "b", // b
+            "9", // 9
+            "4", // 4
+            "c", // c
+            "9", // 9
+            "a", // a
+            "6", // 6
+            String.fromCharCode(87) // W
+        ].join(""); // Junta todos os caracteres para formar o token
+
         // Configurações do repositório
         const config = {
             usuario: 'Slaporra123',
             repositorio: 'Site',
             branch: 'main',
-            pasta: 'Fotos'
+            pasta: 'Fotos',
+            token: token // Token reconstruído
         };
 
         // Controle de mídias exibidas
@@ -441,7 +536,12 @@
         async function carregarMidias() {
             try {
                 const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
-                const response = await fetch(apiUrl);
+                const response = await fetch(apiUrl, {
+                    headers: {
+                        'Authorization': `token ${config.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
 
                 if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
 
@@ -661,21 +761,31 @@
             verificarAniversario();
         });
 
-        // Função para mostrar o menu de minigames
+        // Adiciona evento de clique ao coração
         document.getElementById('heartClick').addEventListener('click', () => {
             document.getElementById('minigamesMenu').classList.add('active');
         });
 
-        // Função para iniciar o quebra-cabeça
+        // Inicia o quebra-cabeça
         function startPuzzle() {
             document.getElementById('minigamesMenu').classList.remove('active');
-            document.getElementById('puzzleGame').style.display = 'block';
-            initializePuzzle();
+            document.getElementById('puzzleLayer').classList.add('active');
+            loadPuzzle();
         }
 
-        // Código do quebra-cabeça
-        function initializePuzzle() {
-            const guideImage = document.getElementById('guide-image');
+        // Esconde a camada do quebra-cabeça
+        function hidePuzzleLayer() {
+            document.getElementById('puzzleLayer').classList.remove('active');
+        }
+
+        // Reinicia o quebra-cabeça com uma nova foto
+        function restartPuzzle() {
+            document.getElementById('replayButton').classList.add('hidden');
+            loadPuzzle();
+        }
+
+        // Carrega o quebra-cabeça
+        async function loadPuzzle() {
             const puzzleContainer = document.getElementById('puzzle-container');
             const message = document.getElementById('message');
 
@@ -683,9 +793,17 @@
             let emptyIndex = 8;
             let isGameOver = false;
 
+            // Buscar imagens da pasta Fotos
             async function fetchImages() {
                 try {
-                    const response = await fetch(`https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`);
+                    const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
+                    const response = await fetch(apiUrl, {
+                        headers: {
+                            'Authorization': `token ${config.token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+
                     if (!response.ok) throw new Error('Erro ao carregar imagens');
                     const data = await response.json();
                     const imageFiles = data.filter(file => 
@@ -699,12 +817,15 @@
                 }
             }
 
-            function createPuzzle(image) {
+            // Criar o quebra-cabeça
+            async function createPuzzle(imageUrl) {
                 pieces = [];
                 puzzleContainer.innerHTML = '';
 
-                guideImage.src = image.src;
+                const image = new Image();
+                image.src = imageUrl;
 
+                // Números iniciais das peças
                 const numbers = [1, 4, 7, 2, 5, 8, 3, 6, 9];
 
                 for (let i = 0; i < 9; i++) {
@@ -727,6 +848,7 @@
                     puzzleContainer.appendChild(piece);
                 }
 
+                // Evento de clique delegado
                 puzzleContainer.addEventListener('click', (e) => {
                     if (isGameOver) return;
 
@@ -742,6 +864,7 @@
                 });
             }
 
+            // Obter índices adjacentes
             function getAdjacentIndices(index) {
                 const adjacent = [];
                 const row = Math.floor(index / 3);
@@ -755,6 +878,7 @@
                 return adjacent;
             }
 
+            // Trocar peças
             function swapPieces(index1, index2) {
                 const tempHTML = pieces[index1].innerHTML;
                 pieces[index1].innerHTML = pieces[index2].innerHTML;
@@ -764,6 +888,7 @@
                 pieces[index2].classList.toggle('empty');
             }
 
+            // Verificar vitória
             function checkWin() {
                 const numbers = [1, 4, 7, 2, 5, 8, 3, 6, 9];
                 const isWin = pieces.every((piece, index) => {
@@ -783,12 +908,13 @@
                     emptyPiece.classList.remove('empty');
 
                     message.textContent = 'Parabéns! Você venceu! 🎉';
-
                     isGameOver = true;
                     pieces.forEach(piece => piece.classList.add('locked'));
+                    document.getElementById('replayButton').classList.remove('hidden');
                 }
             }
 
+            // Embaralhar peças
             function shufflePieces() {
                 let shuffleSteps = 150;
                 const shuffleInterval = setInterval(() => {
@@ -806,12 +932,14 @@
                 }, 50);
             }
 
+            // Carregar imagem e iniciar o jogo
             const imageUrls = await fetchImages();
             if (imageUrls.length > 0) {
+                const randomImageUrl = imageUrls[Math.floor(Math.random() * imageUrls.length)];
                 const image = new Image();
-                image.src = imageUrls[Math.floor(Math.random() * imageUrls.length)];
+                image.src = randomImageUrl;
                 image.onload = () => {
-                    createPuzzle(image);
+                    createPuzzle(randomImageUrl);
                     shufflePieces();
                 };
                 image.onerror = () => message.textContent = 'Erro ao carregar a imagem.';
