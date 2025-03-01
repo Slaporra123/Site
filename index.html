@@ -28,7 +28,7 @@
             color: #ff1493;
             font-size: 2.5em;
             text-shadow: 0 0 15px #ff1493;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             text-align: center;
         }
 
@@ -48,8 +48,9 @@
             box-shadow: 0 10px 20px rgba(255, 20, 147, 0.3);
             transition: transform 0.3s ease;
             background: #333;
-            width: 150px; /* Tamanho padrão para telas menores */
-            height: 150px; /* Tamanho padrão para telas menores */
+            width: 150px;
+            height: 150px;
+            cursor: pointer;
         }
 
         .media-container:hover {
@@ -127,49 +128,27 @@
             animation: float 6s ease-in infinite;
         }
 
-        .heart {
-            color: #ff1493;
-        }
-
-        .balloon {
-            color: #fff;
-        }
+        .heart { color: #ff1493; }
+        .balloon { color: #fff; }
 
         @keyframes float {
             0% { transform: translateY(110vh) translateX(-50%); }
             100% { transform: translateY(-10vh) translateX(50%); }
         }
 
-        /* Ajustes para telas maiores */
         @media (min-width: 768px) {
-            .media-container {
-                width: 200px;
-                height: 200px;
-            }
-
-            h1 {
-                font-size: 3em;
-            }
-
-            .contador {
-                font-size: 1.5em;
-            }
-
-            .secret-message {
-                font-size: 1.8em;
-            }
+            .media-container { width: 200px; height: 200px; }
+            h1 { font-size: 3em; }
+            .contador { font-size: 1.5em; }
+            .secret-message { font-size: 1.8em; }
         }
 
         @media (min-width: 1024px) {
-            .media-container {
-                width: 250px;
-                height: 250px;
-            }
+            .media-container { width: 250px; height: 250px; }
         }
 
-        /* Novo estilo para a mensagem de aniversário */
         .anniversary-message {
-            display: none; /* Inicialmente oculta */
+            display: none;
             color: #ff1493;
             text-align: center;
             font-size: 1.5em;
@@ -177,16 +156,9 @@
             text-shadow: 0 0 15px #ff1493;
         }
 
-        .anniversary-message.active {
-            display: block; /* Exibe a mensagem */
-        }
+        .anniversary-message.active { display: block; }
+        .contador.hidden { display: none; }
 
-        /* Oculta o contador no dia 26 */
-        .contador.hidden {
-            display: none;
-        }
-
-        /* Estilo para o menu de minigames */
         .minigames-menu {
             display: none;
             position: fixed;
@@ -201,9 +173,7 @@
             text-align: center;
         }
 
-        .minigames-menu.active {
-            display: block;
-        }
+        .minigames-menu.active { display: block; }
 
         .minigames-menu button {
             padding: 10px 20px;
@@ -222,7 +192,6 @@
             transform: scale(1.05);
         }
 
-        /* Estilo para o quebra-cabeça */
         .puzzle-layer {
             display: none;
             position: fixed;
@@ -237,26 +206,49 @@
             text-align: center;
             font-size: 1.2em;
             flex-direction: column;
-            gap: 20px;
+            gap: 10px;
             z-index: 1000;
         }
 
-        .puzzle-layer.active {
-            display: flex;
+        .puzzle-layer.active { display: flex; }
+
+        #difficulty-selector {
+            margin-bottom: 10px;
+            color: #ff1493;
+            text-shadow: 0 0 5px #ff1493;
         }
 
-        .puzzle-container {
+        #difficulty-selector label {
+            margin-right: 10px;
+        }
+
+        #difficulty {
+            padding: 5px;
+            background: #333;
+            color: #ff1493;
+            border: 1px solid #ff1493;
+            border-radius: 5px;
+        }
+
+        #guide-image {
+            max-width: 90vw;
+            max-height: 15vh;
+            margin-bottom: 10px;
+            border: 2px solid #ff1493;
+        }
+
+        #puzzle-container {
             display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-template-rows: repeat(3, 100px);
             gap: 5px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            width: 90vw;
+            height: calc(100vh - 250px);
+            max-width: 600px;
+            max-height: 600px;
         }
 
         .puzzle-piece {
-            width: 100px;
-            height: 100px;
-            border: 1px solid #ccc;
+            border: 1px solid #ff1493;
             box-sizing: border-box;
             overflow: hidden;
             position: relative;
@@ -267,18 +259,19 @@
             align-items: center;
             font-size: 20px;
             font-weight: bold;
-            color: #333;
+            color: #ff1493;
         }
 
         .puzzle-piece img {
             position: absolute;
-            width: 300px;
-            height: 300px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .empty {
-            background: #f0f0f0;
-            border: 2px dashed #ccc;
+            background: #333;
+            border: 2px dashed #ff1493;
             cursor: not-allowed;
         }
 
@@ -287,12 +280,30 @@
             pointer-events: none;
         }
 
+        #message {
+            text-align: center;
+            font-size: 1.2em;
+            color: #ff1493;
+            text-shadow: 0 0 5px #ff1493;
+        }
+
+        #counters {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #ff1493;
+            text-shadow: 0 0 5px #ff1493;
+        }
+
         .puzzle-buttons {
             display: flex;
             gap: 10px;
         }
 
-        .puzzle-buttons button {
+        .puzzle-buttons button, #start-button, #custom-image-button {
             padding: 10px 20px;
             font-size: 1em;
             background: #ff1493;
@@ -303,38 +314,29 @@
             transition: all 0.3s;
         }
 
-        .puzzle-buttons button:hover {
+        .puzzle-buttons button:hover, #start-button:hover, #custom-image-button:hover {
             background: #ff0066;
             transform: scale(1.05);
         }
 
-        .puzzle-buttons button.hidden {
-            display: none;
-        }
+        .puzzle-buttons button.hidden { display: none; }
     </style>
 </head>
 <body>
     <h1>💖 O Amor da Minha Vida 💖</h1>
 
     <div class="gallery">
-        <div class="media-container" data-code="•">
-            <div id="media1" class="media"></div>
-        </div>
-        <div class="media-container" data-code="-">
-            <div id="media2" class="media"></div>
-        </div>
+        <div class="media-container" data-code="•"><div id="media1" class="media"></div></div>
+        <div class="media-container" data-code="-"><div id="media2" class="media"></div></div>
     </div>
 
-    <!-- Contador de Dias Juntos -->
     <div class="contador" id="contador">
         <p id="tempoConhecemos"></p>
         <p id="tempoNamoro"></p>
     </div>
 
-    <!-- Mensagem de aniversário -->
     <div class="anniversary-message" id="anniversaryMessage"></div>
 
-    <!-- Camada secreta -->
     <div class="secret-layer" id="secretLayer">
         <div class="secret-message">
             Eu amo MUITO te ter na minha vida,<br>
@@ -345,219 +347,93 @@
         <button class="back-button" onclick="hideSecretLayer()">Voltar</button>
     </div>
 
-    <!-- Menu de Minigames -->
     <div class="minigames-menu" id="minigamesMenu">
-        <h2>Minigames</h2>
+        <h2 style="color: #ff1493; text-shadow: 0 0 5px #ff1493;">Minigames</h2>
         <button onclick="startPuzzle()">Quebra-Cabeça</button>
     </div>
 
-    <!-- Camada do Quebra-Cabeça -->
     <div class="puzzle-layer" id="puzzleLayer">
-        <div id="puzzle-container" class="puzzle-container"></div>
-        <div id="message">Carregando quebra-cabeça...</div>
+        <div id="difficulty-selector">
+            <label for="difficulty">Escolha a dificuldade:</label>
+            <select id="difficulty">
+                <option value="3">Fácil (3x3)</option>
+                <option value="4">Médio (4x4)</option>
+                <option value="5">Difícil (5x5)</option>
+            </select>
+            <button id="start-button">Iniciar Jogo</button>
+        </div>
+        <input type="file" id="file-input" accept="image/*" style="display: none;">
+        <button id="custom-image-button">Usar Minha Imagem</button>
+        <img id="guide-image" src="" alt="Guia do Quebra-Cabeça">
+        <div id="counters">
+            <div>Tempo: <span id="time-counter">00:00</span></div>
+            <div>Movimentos: <span id="move-counter">0</span></div>
+        </div>
+        <div id="puzzle-container"></div>
+        <div id="message">Escolha a dificuldade e clique em "Iniciar Jogo".</div>
         <div class="puzzle-buttons">
             <button onclick="hidePuzzleLayer()">Voltar à Tela Inicial</button>
             <button id="replayButton" class="hidden" onclick="restartPuzzle()">Rejogar</button>
         </div>
     </div>
 
-    <!-- Biblioteca de partículas -->
     <div id="particles-js"></div>
 
-    <!-- Biblioteca Moment.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        // Configuração do Particles.js
         particlesJS("particles-js", {
             particles: {
-                number: {
-                    value: 50, // Número máximo de partículas
-                    density: {
-                        enable: true,
-                        value_area: 800
-                    }
-                },
-                color: {
-                    value: "#ff1493" // Cor das partículas
-                },
-                shape: {
-                    type: "circle", // Formato das partículas
-                    stroke: {
-                        width: 0,
-                        color: "#000000"
-                    },
-                    polygon: {
-                        nb_sides: 5
-                    }
-                },
-                opacity: {
-                    value: 0.5,
-                    random: false,
-                    anim: {
-                        enable: false,
-                        speed: 1,
-                        opacity_min: 0.1,
-                        sync: false
-                    }
-                },
-                size: {
-                    value: 3,
-                    random: true,
-                    anim: {
-                        enable: false,
-                        speed: 40,
-                        size_min: 0.1,
-                        sync: false
-                    }
-                },
-                line_linked: {
-                    enable: true,
-                    distance: 150,
-                    color: "#ff1493",
-                    opacity: 0.4,
-                    width: 1
-                },
-                move: {
-                    enable: true,
-                    speed: 6,
-                    direction: "none",
-                    random: false,
-                    straight: false,
-                    out_mode: "out",
-                    bounce: false,
-                    attract: {
-                        enable: false,
-                        rotateX: 600,
-                        rotateY: 1200
-                    }
-                }
+                number: { value: 50, density: { enable: true, value_area: 800 } },
+                color: { value: "#ff1493" },
+                shape: { type: "circle", stroke: { width: 0, color: "#000000" }, polygon: { nb_sides: 5 } },
+                opacity: { value: 0.5, random: false, anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false } },
+                size: { value: 3, random: true, anim: { enable: false, speed: 40, size_min: 0.1, sync: false } },
+                line_linked: { enable: true, distance: 150, color: "#ff1493", opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 6, direction: "none", random: false, straight: false, out_mode: "out", bounce: false, attract: { enable: false, rotateX: 600, rotateY: 1200 } }
             },
             interactivity: {
                 detect_on: "canvas",
-                events: {
-                    onhover: {
-                        enable: false, // Desativar interação com o mouse
-                        mode: "repulse"
-                    },
-                    onclick: {
-                        enable: false, // Desativar criação de partículas ao clicar
-                        mode: "push"
-                    },
-                    resize: true
-                },
-                modes: {
-                    grab: {
-                        distance: 400,
-                        line_linked: {
-                            opacity: 1
-                        }
-                    },
-                    bubble: {
-                        distance: 400,
-                        size: 40,
-                        duration: 2,
-                        opacity: 8,
-                        speed: 3
-                    },
-                    repulse: {
-                        distance: 200,
-                        duration: 0.4
-                    },
-                    push: {
-                        particles_nb: 0 // Nenhuma partícula é criada ao clicar
-                    },
-                    remove: {
-                        particles_nb: 2
-                    }
-                }
+                events: { onhover: { enable: false, mode: "repulse" }, onclick: { enable: false, mode: "push" }, resize: true },
+                modes: { grab: { distance: 400, line_linked: { opacity: 1 } }, bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 }, repulse: { distance: 200, duration: 0.4 }, push: { particles_nb: 0 }, remove: { particles_nb: 2 } }
             },
             retina_detect: true
         });
 
-        // Ofuscação de cada caractere do token
         const token = [
-            String.fromCharCode(103), // g
-            String.fromCharCode(104), // h
-            String.fromCharCode(112), // p
-            "_", // _
-            "e", // e
-            "3", // 3
-            "x", // x
-            "7", // 7
-            "9", // 9
-            String.fromCharCode(77), // M
-            "5", // 5
-            String.fromCharCode(68), // D
-            String.fromCharCode(87), // W
-            String.fromCharCode(79), // O
-            String.fromCharCode(84), // T
-            "p", // p
-            String.fromCharCode(86), // V
-            String.fromCharCode(78), // N
-            String.fromCharCode(81), // Q
-            "o", // o
-            "o", // o
-            String.fromCharCode(76), // L
-            String.fromCharCode(89), // Y
-            String.fromCharCode(66), // B
-            String.fromCharCode(66), // B
-            "e", // e
-            String.fromCharCode(90), // Z
-            String.fromCharCode(76), // L
-            String.fromCharCode(71), // G
-            "w", // w
-            "k", // k
-            String.fromCharCode(74), // J
-            "b", // b
-            "9", // 9
-            "4", // 4
-            "c", // c
-            "9", // 9
-            "a", // a
-            "6", // 6
-            String.fromCharCode(87) // W
-        ].join(""); // Junta todos os caracteres para formar o token
+            String.fromCharCode(103), "h", "p", "_", "e", "3", "x", "7", "9", String.fromCharCode(77),
+            "5", String.fromCharCode(68), String.fromCharCode(87), String.fromCharCode(79), String.fromCharCode(84),
+            "p", String.fromCharCode(86), String.fromCharCode(78), String.fromCharCode(81), "o", "o",
+            String.fromCharCode(76), String.fromCharCode(89), String.fromCharCode(66), String.fromCharCode(66),
+            "e", String.fromCharCode(90), String.fromCharCode(76), String.fromCharCode(71), "w", "k",
+            String.fromCharCode(74), "b", "9", "4", "c", "9", "a", "6", String.fromCharCode(87)
+        ].join("");
 
-        // Configurações do repositório
         const config = {
             usuario: 'Slaporra123',
             repositorio: 'Site',
             branch: 'main',
             pasta: 'Fotos',
-            token: token // Token reconstruído
+            token: token
         };
 
-        // Controle de mídias exibidas
         let displayedMedia = new Set();
 
-        // Carrega mídias aleatórias únicas
         async function carregarMidias() {
             try {
                 const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
                 const response = await fetch(apiUrl, {
-                    headers: {
-                        'Authorization': `token ${config.token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
+                    headers: { 'Authorization': `token ${config.token}`, 'Accept': 'application/vnd.github.v3+json' }
                 });
-
-                if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-
+                if (!response.ok) throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
                 const files = await response.json();
                 const midias = files
                     .filter(file => /\.(jpg|jpeg|png|gif|webp|mp4|webm)$/i.test(file.name))
-                    .map(file => ({
-                        url: file.download_url,
-                        type: file.name.match(/\.(jpg|jpeg|png|gif|webp|mp4|webm)$/i)[1].toLowerCase()
-                    }));
+                    .map(file => ({ url: file.download_url, type: file.name.match(/\.(jpg|jpeg|png|gif|webp|mp4|webm)$/i)[1].toLowerCase() }));
 
                 if (midias.length < 2) throw new Error('Adicione pelo menos 2 mídias diferentes');
-
-                // Filtra mídias já exibidas
                 const availableMedia = midias.filter(media => !displayedMedia.has(media.url));
-
                 if (availableMedia.length < 2) {
                     displayedMedia.clear();
                     return carregarMidias();
@@ -571,16 +447,14 @@
 
                 displayedMedia.add(media1.url);
                 displayedMedia.add(media2.url);
-
             } catch (error) {
-                console.error('Erro:', error);
+                console.error('Erro ao carregar mídias:', error);
                 alert(`Falha ao carregar: ${error.message}`);
             }
         }
 
-        // Exibe a mídia no container
         function exibirMidia(container, media) {
-            container.innerHTML = ''; // Limpa o conteúdo anterior
+            container.innerHTML = '';
             if (media.type === 'mp4' || media.type === 'webm') {
                 const video = document.createElement('video');
                 video.src = media.url;
@@ -598,99 +472,58 @@
             }
         }
 
-        // Sistema de código secreto
-        const secretCode = ['•', '•', '-']; // Código secreto para a mensagem
+        const secretCode = ['•', '•', '-'];
         let inputSequence = [];
 
-        // Adiciona eventos de clique aos contêineres de mídia
-        document.querySelectorAll('.media-container').forEach(container => {
-            container.addEventListener('click', () => {
-                inputSequence.push(container.dataset.code); // Adiciona o código ao array
-                checkSecretCode(); // Verifica o código
-            });
-        });
-
-        // Verifica se o código secreto foi inserido corretamente
         function checkSecretCode() {
-            if (inputSequence.length > secretCode.length) {
-                inputSequence.shift(); // Remove o primeiro item se a sequência for maior que o código
-            }
-
-            // Verifica se a sequência atual corresponde ao código secreto
+            if (inputSequence.length > secretCode.length) inputSequence.shift();
             if (inputSequence.join('') === secretCode.join('')) {
-                showSecretLayer(); // Mostra a camada secreta
-                inputSequence = []; // Reseta a sequência
+                showSecretLayer();
+                inputSequence = [];
             }
         }
 
-        // Mostra a camada secreta
         function showSecretLayer() {
             document.getElementById('secretLayer').classList.add('active');
         }
 
-        // Esconde a camada secreta
         function hideSecretLayer() {
             document.getElementById('secretLayer').classList.remove('active');
         }
 
-        // Datas importantes com horas específicas
-        const dataConhecemos = moment.tz("2024-07-11 16:24", "YYYY-MM-DD HH:mm", "America/Sao_Paulo"); // 11 de julho de 2024 às 16:24
-        const dataNamoro = moment.tz("2024-07-26 23:30", "YYYY-MM-DD HH:mm", "America/Sao_Paulo"); // 26 de julho de 2024 às 23:30
+        const dataConhecemos = moment.tz("2024-07-11 16:24", "YYYY-MM-DD HH:mm", "America/Sao_Paulo");
+        const dataNamoro = moment.tz("2024-07-26 23:30", "YYYY-MM-DD HH:mm", "America/Sao_Paulo");
 
-        // Função para calcular a diferença de tempo usando Moment.js
         function calcularDiferenca(dataInicial) {
-            const agora = moment.tz("America/Sao_Paulo"); // Data atual no fuso horário de Brasília
-
+            const agora = moment.tz("America/Sao_Paulo");
             const anos = agora.diff(dataInicial, 'years');
             dataInicial.add(anos, 'years');
-
             const meses = agora.diff(dataInicial, 'months');
             dataInicial.add(meses, 'months');
-
             const dias = agora.diff(dataInicial, 'days');
             dataInicial.add(dias, 'days');
-
             const horas = agora.diff(dataInicial, 'hours');
             dataInicial.add(horas, 'hours');
-
             const minutos = agora.diff(dataInicial, 'minutes');
             dataInicial.add(minutos, 'minutes');
-
             const segundos = agora.diff(dataInicial, 'seconds');
-
-            return {
-                anos: anos,
-                meses: meses,
-                dias: dias,
-                horas: horas,
-                minutos: minutos,
-                segundos: segundos
-            };
+            return { anos, meses, dias, horas, minutos, segundos };
         }
 
-        // Função para formatar o tempo
         function formatarTempo(tempo) {
             return `${tempo.anos} anos, ${tempo.meses} meses, ${tempo.dias} dias, ${tempo.horas} horas, ${tempo.minutos} minutos e ${tempo.segundos} segundos`;
         }
 
-        // Atualiza o contador
         function atualizarContador() {
             const tempoConhecemos = calcularDiferenca(moment(dataConhecemos));
             const tempoNamoro = calcularDiferenca(moment(dataNamoro));
-
-            document.getElementById('tempoConhecemos').textContent = 
-                `Fazem exatamente ${formatarTempo(tempoConhecemos)} que eu conheci o amor da minha vida.`;
-
-            document.getElementById('tempoNamoro').textContent = 
-                `${formatarTempo(tempoNamoro)} que eu finalmente ganhei o coração dela e começamos a escrever nossa história.`;
+            document.getElementById('tempoConhecemos').textContent = `Fazem exatamente ${formatarTempo(tempoConhecemos)} que eu conheci o amor da minha vida.`;
+            document.getElementById('tempoNamoro').textContent = `${formatarTempo(tempoNamoro)} que eu finalmente ganhei o coração dela e começamos a escrever nossa história.`;
         }
 
-        // Função para criar corações e balões (MODIFICADA)
         function criarFesta() {
             const emojisCoracao = ['💖', '💕', '💞', '💓', '💗'];
             const emojisBalao = ['🎈', '🎈', '🎈', '🎈', '🎈'];
-
-            // Limpa elementos anteriores
             document.querySelectorAll('.heart, .balloon').forEach(el => el.remove());
 
             for (let i = 0; i < 10; i++) {
@@ -709,39 +542,27 @@
                 document.body.appendChild(balao);
             }
 
-            // Exibe a mensagem de aniversário no lugar do contador
             const tempoNamoro = calcularDiferenca(dataNamoro);
             let mesesArredondados = tempoNamoro.meses + 1;
             let mensagem = 'Feliz ';
-
-            if (tempoNamoro.anos > 0) {
-                mensagem += `${tempoNamoro.anos} ano${tempoNamoro.anos > 1 ? 's' : ''} `;
-            }
-            if (mesesArredondados > 0 && mesesArredondados < 12) {
-                mensagem += `${mesesArredondados} mês${mesesArredondados > 1 ? 'es' : ''} `;
-            }
-
+            if (tempoNamoro.anos > 0) mensagem += `${tempoNamoro.anos} ano${tempoNamoro.anos > 1 ? 's' : ''} `;
+            if (mesesArredondados > 0 && mesesArredondados < 12) mensagem += `${mesesArredondados} mês${mesesArredondados > 1 ? 'es' : ''} `;
             mensagem += 'de namoro, minha vampirinha 🧛‍♀️🦇🖤';
-            
+
             const anniversaryMessage = document.getElementById('anniversaryMessage');
             anniversaryMessage.textContent = mensagem;
             anniversaryMessage.classList.add('active');
-
-            // Oculta o contador
             document.getElementById('contador').classList.add('hidden');
         }
 
-        // Verificação de data (MODIFICADA)
         function verificarAniversario() {
             const hoje = moment.tz("America/Sao_Paulo");
             const horaAtual = hoje.hours();
             const minutosAtuais = hoje.minutes();
-
             if (hoje.date() === 26) {
                 if (horaAtual < 23 || (horaAtual === 23 && minutosAtuais <= 30)) {
                     criarFesta();
                 } else {
-                    // Limpa a festa se passar do horário
                     document.getElementById('anniversaryMessage').classList.remove('active');
                     document.getElementById('contador').classList.remove('hidden');
                     document.querySelectorAll('.heart, .balloon').forEach(el => el.remove());
@@ -749,204 +570,304 @@
             }
         }
 
-        // Atualizações finais (MODIFICADO)
         setInterval(() => {
             atualizarContador();
-            verificarAniversario(); // Verifica a cada minuto
+            verificarAniversario();
         }, 60000);
 
-        // Inicialização (MODIFICADA)
         carregarMidias().then(() => {
             atualizarContador();
             verificarAniversario();
         });
 
-        // Adiciona evento de clique ao coração
+        document.querySelectorAll('.media-container').forEach(container => {
+            container.addEventListener('click', () => {
+                inputSequence.push(container.dataset.code);
+                checkSecretCode();
+            });
+        });
+
         document.getElementById('heartClick').addEventListener('click', () => {
             document.getElementById('minigamesMenu').classList.add('active');
         });
 
-        // Inicia o quebra-cabeça
         function startPuzzle() {
             document.getElementById('minigamesMenu').classList.remove('active');
             document.getElementById('puzzleLayer').classList.add('active');
-            loadPuzzle();
         }
 
-        // Esconde a camada do quebra-cabeça
         function hidePuzzleLayer() {
             document.getElementById('puzzleLayer').classList.remove('active');
+            stopTimer();
         }
 
-        // Reinicia o quebra-cabeça com uma nova foto
         function restartPuzzle() {
-            document.getElementById('replayButton').classList.add('hidden');
             loadPuzzle();
         }
 
-        // Carrega o quebra-cabeça
-        async function loadPuzzle() {
-            const puzzleContainer = document.getElementById('puzzle-container');
-            const message = document.getElementById('message');
+        const difficultySelector = document.getElementById('difficulty');
+        const startButton = document.getElementById('start-button');
+        const fileInput = document.getElementById('file-input');
+        const customImageButton = document.getElementById('custom-image-button');
+        const guideImage = document.getElementById('guide-image');
+        const puzzleContainer = document.getElementById('puzzle-container');
+        const message = document.getElementById('message');
+        const timeCounter = document.getElementById('time-counter');
+        const moveCounter = document.getElementById('move-counter');
 
-            let pieces = [];
-            let emptyIndex = 8;
-            let isGameOver = false;
+        let pieces = [];
+        let emptyIndex;
+        let isGameOver = false;
+        let gridSize = 3;
+        let customImage = null;
+        let moveCount = 0;
+        let timeCount = 0;
+        let timerInterval = null;
+        let hasStarted = false;
 
-            // Buscar imagens da pasta Fotos
-            async function fetchImages() {
-                try {
-                    const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
-                    const response = await fetch(apiUrl, {
-                        headers: {
-                            'Authorization': `token ${config.token}`,
-                            'Accept': 'application/vnd.github.v3+json'
-                        }
-                    });
+        function createPuzzle(image) {
+            pieces = [];
+            puzzleContainer.innerHTML = '';
+            puzzleContainer.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+            puzzleContainer.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
 
-                    if (!response.ok) throw new Error('Erro ao carregar imagens');
-                    const data = await response.json();
-                    const imageFiles = data.filter(file => 
-                        file.type === 'file' && file.name.match(/\.(jpg|jpeg|png|gif)$/i)
-                    );
-                    if (imageFiles.length === 0) throw new Error('Nenhuma imagem encontrada');
-                    return imageFiles.map(file => file.download_url);
-                } catch (error) {
-                    message.textContent = error.message;
-                    return [];
-                }
-            }
+            guideImage.src = image.src;
 
-            // Criar o quebra-cabeça
-            async function createPuzzle(imageUrl) {
-                pieces = [];
-                puzzleContainer.innerHTML = '';
+            const totalPieces = gridSize * gridSize;
+            const numbers = Array.from({ length: totalPieces }, (_, i) => i + 1);
+            emptyIndex = totalPieces - 1;
 
-                const image = new Image();
-                image.src = imageUrl;
+            for (let i = 0; i < totalPieces; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'puzzle-piece' + (i === emptyIndex ? ' empty' : '');
 
-                // Números iniciais das peças
-                const numbers = [1, 4, 7, 2, 5, 8, 3, 6, 9];
-
-                for (let i = 0; i < 9; i++) {
-                    const piece = document.createElement('div');
-                    piece.className = 'puzzle-piece' + (i === emptyIndex ? ' empty' : '');
-                    
-                    if (i !== emptyIndex) {
-                        const img = document.createElement('img');
-                        img.src = image.src;
-                        img.style.left = `-${(i % 3) * 100}px`;
-                        img.style.top = `-${Math.floor(i / 3) * 100}px`;
-                        piece.appendChild(img);
-
-                        const number = document.createElement('div');
-                        number.textContent = numbers[i];
-                        piece.appendChild(number);
-                    }
-                    
-                    pieces.push(piece);
-                    puzzleContainer.appendChild(piece);
-                }
-
-                // Evento de clique delegado
-                puzzleContainer.addEventListener('click', (e) => {
-                    if (isGameOver) return;
-
-                    const clickedPiece = e.target.closest('.puzzle-piece');
-                    if (!clickedPiece || clickedPiece.classList.contains('empty')) return;
-                    
-                    const clickedIndex = pieces.indexOf(clickedPiece);
-                    if (getAdjacentIndices(clickedIndex).includes(emptyIndex)) {
-                        swapPieces(clickedIndex, emptyIndex);
-                        emptyIndex = clickedIndex;
-                        checkWin();
-                    }
-                });
-            }
-
-            // Obter índices adjacentes
-            function getAdjacentIndices(index) {
-                const adjacent = [];
-                const row = Math.floor(index / 3);
-                const col = index % 3;
-
-                if (row > 0) adjacent.push(index - 3);
-                if (row < 2) adjacent.push(index + 3);
-                if (col > 0) adjacent.push(index - 1);
-                if (col < 2) adjacent.push(index + 1);
-
-                return adjacent;
-            }
-
-            // Trocar peças
-            function swapPieces(index1, index2) {
-                const tempHTML = pieces[index1].innerHTML;
-                pieces[index1].innerHTML = pieces[index2].innerHTML;
-                pieces[index2].innerHTML = tempHTML;
-
-                pieces[index1].classList.toggle('empty');
-                pieces[index2].classList.toggle('empty');
-            }
-
-            // Verificar vitória
-            function checkWin() {
-                const numbers = [1, 4, 7, 2, 5, 8, 3, 6, 9];
-                const isWin = pieces.every((piece, index) => {
-                    if (index === emptyIndex) return true;
-                    const number = piece.querySelector('div');
-                    return number && number.textContent == numbers[index];
-                });
-
-                if (isWin) {
-                    const emptyPiece = pieces[emptyIndex];
+                if (i !== emptyIndex) {
                     const img = document.createElement('img');
-                    img.src = pieces[0].querySelector('img').src;
-                    img.style.left = `-${(emptyIndex % 3) * 100}px`;
-                    img.style.top = `-${Math.floor(emptyIndex / 3) * 100}px`;
-                    emptyPiece.innerHTML = '';
-                    emptyPiece.appendChild(img);
-                    emptyPiece.classList.remove('empty');
+                    img.src = image.src;
+                    img.style.width = `${gridSize * 100}%`;
+                    img.style.height = `${gridSize * 100}%`;
+                    img.style.left = `-${(i % gridSize) * 100}%`;
+                    img.style.top = `-${Math.floor(i / gridSize) * 100}%`;
+                    piece.appendChild(img);
 
-                    message.textContent = 'Parabéns! Você venceu! 🎉';
-                    isGameOver = true;
-                    pieces.forEach(piece => piece.classList.add('locked'));
-                    document.getElementById('replayButton').classList.remove('hidden');
+                    const number = document.createElement('div');
+                    number.textContent = numbers[i];
+                    piece.appendChild(number);
                 }
+
+                pieces.push(piece);
+                puzzleContainer.appendChild(piece);
             }
 
-            // Embaralhar peças
-            function shufflePieces() {
-                let shuffleSteps = 200;
-                const shuffleInterval = setInterval(() => {
-                    if (shuffleSteps <= 0) {
-                        clearInterval(shuffleInterval);
-                        message.textContent = 'Clique nas peças para movê-las!';
-                        return;
+            puzzleContainer.addEventListener('click', (e) => {
+                if (isGameOver) return;
+                const clickedPiece = e.target.closest('.puzzle-piece');
+                if (!clickedPiece || clickedPiece.classList.contains('empty')) return;
+
+                const clickedIndex = pieces.indexOf(clickedPiece);
+                if (getAdjacentIndices(clickedIndex).includes(emptyIndex)) {
+                    swapPieces(clickedIndex, emptyIndex);
+                    emptyIndex = clickedIndex;
+                    moveCount++;
+                    moveCounter.textContent = moveCount;
+
+                    if (!hasStarted) {
+                        hasStarted = true;
+                        startTimer();
                     }
 
-                    const adjacent = getAdjacentIndices(emptyIndex);
-                    const randomIndex = adjacent[Math.floor(Math.random() * adjacent.length)];
-                    swapPieces(randomIndex, emptyIndex);
-                    emptyIndex = randomIndex;
-                    shuffleSteps--;
-                }, 50);
-            }
+                    checkWin();
+                }
+            });
+        }
 
-            // Carregar imagem e iniciar o jogo
-            const imageUrls = await fetchImages();
-            if (imageUrls.length > 0) {
-                const randomImageUrl = imageUrls[Math.floor(Math.random() * imageUrls.length)];
-                const image = new Image();
-                image.src = randomImageUrl;
-                image.onload = () => {
-                    createPuzzle(randomImageUrl);
-                    shufflePieces();
-                };
-                image.onerror = () => message.textContent = 'Erro ao carregar a imagem.';
-            } else {
-                message.textContent = 'Nenhuma imagem encontrada na pasta Fotos.';
+        function getAdjacentIndices(index) {
+            const adjacent = [];
+            const row = Math.floor(index / gridSize);
+            const col = index % gridSize;
+
+            if (row > 0) adjacent.push(index - gridSize);
+            if (row < gridSize - 1) adjacent.push(index + gridSize);
+            if (col > 0) adjacent.push(index - 1);
+            if (col < gridSize - 1) adjacent.push(index + 1);
+
+            return adjacent;
+        }
+
+        function swapPieces(index1, index2) {
+            const tempHTML = pieces[index1].innerHTML;
+            pieces[index1].innerHTML = pieces[index2].innerHTML;
+            pieces[index2].innerHTML = tempHTML;
+
+            pieces[index1].classList.toggle('empty');
+            pieces[index2].classList.toggle('empty');
+        }
+
+        function checkWin() {
+            const totalPieces = gridSize * gridSize;
+            const numbers = Array.from({ length: totalPieces }, (_, i) => i + 1);
+            const isWin = pieces.every((piece, index) => {
+                if (index === emptyIndex) return true;
+                const number = piece.querySelector('div');
+                return number && number.textContent == numbers[index];
+            });
+
+            if (isWin) {
+                const emptyPiece = pieces[emptyIndex];
+                const img = document.createElement('img');
+                img.src = pieces[0].querySelector('img').src;
+                img.style.width = `${gridSize * 100}%`;
+                img.style.height = `${gridSize * 100}%`;
+                img.style.left = `-${(emptyIndex % gridSize) * 100}%`;
+                img.style.top = `-${Math.floor(emptyIndex / gridSize) * 100}%`;
+                emptyPiece.innerHTML = '';
+                emptyPiece.appendChild(img);
+                emptyPiece.classList.remove('empty');
+
+                message.textContent = 'Parabéns! Você venceu! 🎉';
+                isGameOver = true;
+                pieces.forEach(piece => piece.classList.add('locked'));
+                document.getElementById('replayButton').classList.remove('hidden');
+                stopTimer();
             }
         }
+
+        function shufflePieces() {
+            let shuffleSteps = 100 * gridSize;
+            const shuffleInterval = setInterval(() => {
+                if (shuffleSteps <= 0) {
+                    clearInterval(shuffleInterval);
+                    message.textContent = 'Clique nas peças para movê-las!';
+                    return;
+                }
+
+                const adjacent = getAdjacentIndices(emptyIndex);
+                const randomIndex = adjacent[Math.floor(Math.random() * adjacent.length)];
+                swapPieces(randomIndex, emptyIndex);
+                emptyIndex = randomIndex;
+                shuffleSteps--;
+            }, 5);
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeCount++;
+                const minutes = Math.floor(timeCount / 60).toString().padStart(2, '0');
+                const seconds = (timeCount % 60).toString().padStart(2, '0');
+                timeCounter.textContent = `${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function startGameWithCustomImage(image) {
+            isGameOver = false;
+            hasStarted = false;
+            moveCount = 0;
+            timeCount = 0;
+            moveCounter.textContent = moveCount;
+            timeCounter.textContent = '00:00';
+            gridSize = parseInt(difficultySelector.value);
+            message.textContent = 'Carregando quebra-cabeça...';
+
+            createPuzzle(image);
+            shufflePieces();
+        }
+
+        customImageButton.addEventListener('click', () => {
+            console.log("Tentando abrir seletor de arquivos...");
+            if (fileInput && typeof fileInput.click === 'function') {
+                fileInput.click(); // Dispara o seletor de arquivos
+            } else {
+                console.error("fileInput.click não é uma função ou elemento não encontrado.");
+                alert("Seu dispositivo pode não suportar esse recurso. Tente outro navegador ou dispositivo.");
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                console.log("Arquivo selecionado:", file.name);
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    console.log("Carregando imagem...");
+                    const image = new Image();
+                    image.src = event.target.result;
+                    image.onload = () => {
+                        console.log("Imagem carregada com sucesso!");
+                        customImage = image;
+                        startGameWithCustomImage(image);
+                    };
+                    image.onerror = () => {
+                        console.error("Erro ao carregar a imagem personalizada.");
+                        message.textContent = 'Erro ao carregar a imagem personalizada.';
+                    };
+                };
+                reader.readAsDataURL(file);
+            } else {
+                console.log("Nenhum arquivo selecionado.");
+            }
+        });
+
+        async function fetchImages() {
+            try {
+                console.log("Buscando imagens no GitHub...");
+                const apiUrl = `https://api.github.com/repos/${config.usuario}/${config.repositorio}/contents/${config.pasta}?ref=${config.branch}`;
+                const response = await fetch(apiUrl, {
+                    headers: { 'Authorization': `token ${config.token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (!response.ok) throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+                const data = await response.json();
+                console.log("Resposta da API:", data);
+                const imageFiles = data.filter(file => 
+                    file.type === 'file' && file.name.match(/\.(jpg|jpeg|png|gif)$/i)
+                );
+                if (imageFiles.length === 0) throw new Error('Nenhuma imagem encontrada na pasta Fotos.');
+                return imageFiles.map(file => file.download_url);
+            } catch (error) {
+                console.error("Erro ao buscar imagens:", error);
+                message.textContent = `Erro ao carregar imagens: ${error.message}`;
+                return [];
+            }
+        }
+
+        function loadPuzzle() {
+            isGameOver = false;
+            hasStarted = false;
+            moveCount = 0;
+            timeCount = 0;
+            moveCounter.textContent = moveCount;
+            timeCounter.textContent = '00:00';
+            gridSize = parseInt(difficultySelector.value);
+            message.textContent = 'Carregando quebra-cabeça...';
+
+            const puzzleSize = Math.min(90 * window.innerWidth / 100, 600);
+            puzzleContainer.style.width = `${puzzleSize}px`;
+            puzzleContainer.style.height = `${puzzleSize}px`;
+
+            fetchImages().then(imageUrls => {
+                if (imageUrls.length > 0) {
+                    console.log("Imagens disponíveis:", imageUrls);
+                    const image = new Image();
+                    image.src = imageUrls[Math.floor(Math.random() * imageUrls.length)];
+                    image.onload = () => {
+                        console.log("Imagem carregada do GitHub:", image.src);
+                        createPuzzle(image);
+                        shufflePieces();
+                    };
+                    image.onerror = () => {
+                        console.error("Erro ao carregar imagem do GitHub:", image.src);
+                        message.textContent = 'Erro ao carregar a imagem do GitHub.';
+                    };
+                } else {
+                    message.textContent = 'Nenhuma imagem encontrada na pasta Fotos.';
+                }
+            });
+        }
+
+        startButton.addEventListener('click', loadPuzzle);
     </script>
 </body>
 </html>
